@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="com.ang.acb.materialme.data.model.Resource.Status" />
+
+        <variable
+            name="resource"
+            type="com.ang.acb.materialme.data.model.Resource" />
+
+        <variable
+            name="callback"
+            type="com.ang.acb.materialme.ui.common.RetryCallback" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="16dp">
+
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:layout_gravity="center"
+            app:toggleVisibility="@{resource.status == Status.LOADING}" />
+
+        <Button
+            android:id="@+id/retry_button"
+            style="@style/Widget.MaterialComponents.Button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:layout_gravity="center"
+            android:text="@string/action_retry"
+            android:onClick="@{() -> callback.retry()}"
+            app:toggleVisibility="@{resource.status == Status.ERROR}" />
+
+        <TextView
+            android:id="@+id/error_msg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:layout_gravity="center_horizontal"
+            android:text="@{resource.message ?? @string/unknown_error}"
+            android:textStyle="bold"
+            tools:text="Unable to connect to host..."
+            app:toggleVisibility="@{resource.status == Status.ERROR}" />
+    </LinearLayout>
+
+</layout>

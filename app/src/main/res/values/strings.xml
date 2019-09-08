@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">MaterialMe</string>
+    <string name="action_retry">Retry</string>
+    <string name="unknown_error">Unknown error</string>
+    <string name="article_photo_content_description">Article photo</string>
+    <string name="action_share">action_share</string>
+    <string name="article_thumbnail">Article thumbnail</string>
+    <string name="data_not_available">Article data not available</string>
+</resources>
