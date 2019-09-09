@@ -12,5 +12,4 @@ import com.ang.acb.materialme.data.model.Article;
 public abstract class AppDatabase extends RoomDatabase {
 
     public abstract ArticleDao articleDao();
-
 }

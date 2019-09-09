@@ -13,6 +13,6 @@ import retrofit2.http.GET;
  */
 public interface ApiService {
 
-    @GET("xyz-reader.json")
+    @GET("data.json")
     LiveData<ApiResponse<List<Article>>> getAllArticles();
 }

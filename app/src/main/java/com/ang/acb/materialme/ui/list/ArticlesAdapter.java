@@ -6,8 +6,10 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.ang.acb.materialme.R;
 import com.ang.acb.materialme.data.model.Article;
 import com.ang.acb.materialme.databinding.ArticleItemBinding;
+import com.bumptech.glide.Glide;
 
 import java.util.List;
 
@@ -73,6 +75,15 @@ public class ArticlesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         void bindTo(Article article) {
             // Bind article data.
             binding.setArticle(article);
+
+            // Bind article thumbnail separately, because we need to set the aspect ratio.
+            binding.articleItemThumbnail.setAspectRatio(article.getAspectRatio());
+            Glide.with(binding.getRoot().getContext())
+                    .asBitmap()
+                    .load(article.getThumbUrl())
+                    .dontAnimate()
+                    .placeholder(R.color.photoPlaceholder)
+                    .into(binding.articleItemThumbnail);
 
             // Binding must be executed immediately.
             binding.executePendingBindings();

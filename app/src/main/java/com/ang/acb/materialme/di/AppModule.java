@@ -47,7 +47,7 @@ class AppModule {
     @Singleton
     ApiService provideRetrofit() {
         return new Retrofit.Builder()
-                .baseUrl("https://d17h27t6h515a5.cloudfront.net/topher/2017/March/58c5d68f_xyz-reader/")
+                .baseUrl("https://raw.githubusercontent.com/SuperAwesomeness/XYZReader/master/")
                 // Configure which converter is used for the data serialization.
                 // Gson is a Java serialization/deserialization library that
                 // converts Java Objects into JSON and back.

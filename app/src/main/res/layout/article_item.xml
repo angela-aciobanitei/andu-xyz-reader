@@ -10,50 +10,56 @@
             type="com.ang.acb.materialme.data.model.Article" />
     </data>
 
-    <com.google.android.material.card.MaterialCardView
+    <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:clickable="true"
         android:focusable="true"
-        android:foreground="?android:attr/selectableItemBackground"
-        tools:layout_width="160dp">
+        app:cardElevation="2dp"
+        app:cardCornerRadius="8dp"
+        app:strokeWidth="4dp">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-            <ImageView
+            <com.ang.acb.materialme.utils.DynamicHeightImageView
                 android:id="@+id/article_item_thumbnail"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:contentDescription="@string/article_thumbnail"
-                android:scaleType="centerCrop"
-                app:imageUrl="@{article.getThumbUrl()}"
-                app:layout_constraintDimensionRatio="W,3:2"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:src="@tools:sample/backgrounds/scenic" />
+                tools:background="@color/photoPlaceholder"/>
 
             <TextView
                 android:id="@+id/article_item_title"
-                android:layout_width="wrap_content"
-                android:layout_height="52dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:ellipsize="end"
-                android:gravity="center"
                 android:maxLines="2"
                 android:paddingStart="8dp"
+                android:paddingTop="8dp"
                 android:paddingEnd="8dp"
+                android:paddingBottom="4dp"
                 android:text="@{article.getTitle()}"
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle2"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/article_item_thumbnail"
+                android:textAppearance="@style/TextAppearance.AppCompat.Title"
                 tools:text="Ebooks, Neither E, Nor Books" />
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+            <TextView
+                android:id="@+id/article_item_author"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:paddingBottom="8dp"
+                android:text="@{article.getAuthor()}"
+                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                tools:text="Cory Doctorow"/>
 
-    </com.google.android.material.card.MaterialCardView>
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
 
 </layout>

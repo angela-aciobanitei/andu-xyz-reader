@@ -3,15 +3,14 @@ package com.ang.acb.materialme.ui.list;
 
 import android.content.Context;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
+;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.navigation.fragment.NavHostFragment;
-import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,6 +33,7 @@ import javax.inject.Inject;
 import dagger.android.support.AndroidSupportInjection;
 import timber.log.Timber;
 
+import static android.widget.GridLayout.VERTICAL;
 import static com.ang.acb.materialme.ui.details.ArticlesViewPagerFragment.ARG_POSITION;
 
 public class ArticleListFragment extends Fragment {
@@ -96,8 +96,8 @@ public class ArticleListFragment extends Fragment {
     }
 
     private void setupRecyclerView(){
-        binding.rvArticleList.setLayoutManager(new GridLayoutManager(
-                getHostActivity(), getResources().getInteger(R.integer.grid_column_count)));
+        binding.rvArticleList.setLayoutManager(new StaggeredGridLayoutManager(
+                getResources().getInteger(R.integer.grid_column_count), VERTICAL));
         binding.rvArticleList.addItemDecoration(
                 new SpacingItemDecoration(getHostActivity(), R.dimen.item_offset));
         Timber.d("Setup articles recycle view.");
