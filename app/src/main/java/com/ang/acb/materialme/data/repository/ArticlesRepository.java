@@ -13,35 +13,22 @@ import com.ang.acb.materialme.utils.AppExecutors;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
 
 public class ArticlesRepository {
 
-    // For Singleton instantiation.
-    private static volatile ArticlesRepository sInstance;
     private final AppExecutors executors;
     private final AppDatabase database;
     private final ApiService apiService;
 
+    @Inject
     public ArticlesRepository(AppExecutors executors,
                               AppDatabase database,
                               ApiService apiService) {
         this.executors = executors;
         this.database = database;
         this.apiService = apiService;
-    }
-
-    // Returns the single instance of this class, creating it if necessary.
-    public static ArticlesRepository getInstance(AppExecutors executors,
-                                                 AppDatabase database,
-                                                 ApiService apiService) {
-        if (sInstance == null) {
-            synchronized (ArticlesRepository.class) {
-                if (sInstance == null) {
-                    sInstance = new ArticlesRepository(executors, database, apiService);
-                }
-            }
-        }
-        return sInstance;
     }
 
     public LiveData<Resource<List<Article>>> getAllArticles() {

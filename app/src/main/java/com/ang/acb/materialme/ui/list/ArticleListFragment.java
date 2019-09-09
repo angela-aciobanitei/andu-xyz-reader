@@ -1,12 +1,15 @@
 package com.ang.acb.materialme.ui.list;
 
 
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 
@@ -18,15 +21,17 @@ import com.ang.acb.materialme.R;
 import com.ang.acb.materialme.data.model.Article;
 import com.ang.acb.materialme.data.model.Resource;
 import com.ang.acb.materialme.databinding.FragmentArticleListBinding;
-import com.ang.acb.materialme.ui.common.ArticlesViewModel;
+import com.ang.acb.materialme.ui.viewmodel.ArticlesViewModel;
 import com.ang.acb.materialme.ui.common.MainActivity;
-import com.ang.acb.materialme.utils.InjectorUtils;
 import com.ang.acb.materialme.utils.SpacingItemDecoration;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
+import dagger.android.support.AndroidSupportInjection;
 import timber.log.Timber;
 
 import static com.ang.acb.materialme.ui.details.ArticlesViewPagerFragment.ARG_POSITION;
@@ -37,8 +42,21 @@ public class ArticleListFragment extends Fragment {
     private ArticlesViewModel viewModel;
     private ArticlesAdapter adapter;
 
+    @Inject
+    public ViewModelProvider.Factory viewModelFactory;
+
     // Required empty public constructor
     public ArticleListFragment() {}
+
+    @Override
+    public void onAttach(@NotNull Context context) {
+        // Note: when using Dagger for injecting Fragment objects, inject as early as possible.
+        // For this reason, call AndroidInjection.inject() in onAttach(). This also prevents
+        // inconsistencies if the Fragment is reattached.
+        AndroidSupportInjection.inject(this);
+        super.onAttach(context);
+    }
+
 
 
     @Override
@@ -72,7 +90,8 @@ public class ArticleListFragment extends Fragment {
     }
 
     private void initViewModel() {
-        viewModel = InjectorUtils.provideViewModel(getHostActivity());
+        viewModel = ViewModelProviders.of(getHostActivity(), viewModelFactory)
+                .get(ArticlesViewModel.class);
         Timber.d("Setup articles view model.");
     }
 

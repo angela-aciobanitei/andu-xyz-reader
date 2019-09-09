@@ -1,5 +1,6 @@
 package com.ang.acb.materialme.ui.details;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -8,6 +9,8 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ShareCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.navigation.fragment.NavHostFragment;
 
 import android.view.LayoutInflater;
@@ -18,14 +21,16 @@ import com.ang.acb.materialme.R;
 import com.ang.acb.materialme.data.model.Article;
 import com.ang.acb.materialme.data.model.Resource;
 import com.ang.acb.materialme.databinding.FragmentArticleDetailsBinding;
-import com.ang.acb.materialme.ui.common.ArticlesViewModel;
+import com.ang.acb.materialme.ui.viewmodel.ArticlesViewModel;
 import com.ang.acb.materialme.ui.common.MainActivity;
-import com.ang.acb.materialme.utils.InjectorUtils;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
+import dagger.android.support.AndroidSupportInjection;
 import timber.log.Timber;
 
 public class ArticleDetailsFragment extends Fragment {
@@ -36,6 +41,9 @@ public class ArticleDetailsFragment extends Fragment {
     private ArticlesViewModel viewModel;
     private int position;
 
+    @Inject
+    public ViewModelProvider.Factory viewModelFactory;
+
     // Required empty public constructor
     public ArticleDetailsFragment() {}
 
@@ -45,6 +53,15 @@ public class ArticleDetailsFragment extends Fragment {
         args.putInt(ARG_POSITION, position);
         fragment.setArguments(args);
         return fragment;
+    }
+
+    @Override
+    public void onAttach(@NotNull Context context) {
+        // Note: when using Dagger for injecting Fragment objects, inject as early as possible.
+        // For this reason, call AndroidInjection.inject() in onAttach(). This also prevents
+        // inconsistencies if the Fragment is reattached.
+        AndroidSupportInjection.inject(this);
+        super.onAttach(context);
     }
 
     @Override
@@ -100,7 +117,8 @@ public class ArticleDetailsFragment extends Fragment {
     }
 
     private void initViewModel() {
-        viewModel = InjectorUtils.provideViewModel(getActivity());
+        viewModel = ViewModelProviders.of(getActivity(), viewModelFactory)
+                .get(ArticlesViewModel.class);
         Timber.d("Setup articles view model.");
     }
 
