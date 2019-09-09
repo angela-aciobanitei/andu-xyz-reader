@@ -9,9 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 /**
- * A custom ItemDecoration to provide equal column spacing
- * for a RecyclerView that lays out items in a grid.
- *
+ * A custom ItemDecoration to provide equal column spacing for a RecyclerView that lays out items in a grid.
  * See: https://stackoverflow.com/questions/28531996/android-recyclerview-gridlayoutmanager-column-spacing
  */
 public class SpacingItemDecoration extends RecyclerView.ItemDecoration {

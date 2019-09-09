@@ -6,7 +6,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
-import androidx.lifecycle.Observer;
 
 import com.ang.acb.materialme.data.model.Resource;
 import com.ang.acb.materialme.data.remote.ApiResponse;
@@ -14,22 +13,18 @@ import com.ang.acb.materialme.utils.AppExecutors;
 
 /**
  * A generic class that can provide a resource backed by both the SQLite database and
- * the network. It defines two type parameters, RequestType and ResultType, because the
+ * the network. It defines two type parameters, ResultType and RequestType, because the
  * data type returned from the API might not match the data type used locally.
  *
  * See: https://developer.android.com/jetpack/docs/guide#addendum.
  * See: https://github.com/googlesamples/android-architecture-components/tree/master/GithubBrowserSample
  *
- * @param <ResultType>  Type for the Resource data.
+ * @param <ResultType> Type for the Resource data.
  * @param <RequestType> Type for the API response.
  */
 public abstract class NetworkBoundResource<ResultType, RequestType> {
 
-    // The final result LiveData. Note: why use MediatorLiveData? Consider the following
-    // scenario: we have 2 instances of LiveData, let's name them liveData1 and liveData2,
-    // and we want to merge their emissions in one object: liveDataMerger. Then, liveData1
-    // and liveData2 will become sources for the MediatorLiveData liveDataMerger and every
-    // time onChanged is called for either of them, we set a new value in liveDataMerger.
+    // The final result LiveData
     private final MediatorLiveData<Resource<ResultType>> result = new MediatorLiveData<>();
     private AppExecutors appExecutors;
 
@@ -43,32 +38,14 @@ public abstract class NetworkBoundResource<ResultType, RequestType> {
         // Get the cached data from the database.
         final LiveData<ResultType> dbSource = loadFromDb();
 
-        // Call addSource(LiveData<S> source, Observer<S> onChanged)
-        // to start listening the given source LiveData. The onChanged
-        // observer will be called when source value was changed.
-        result.addSource(dbSource, new Observer<ResultType>() {
-            @Override
-            public void onChanged(ResultType changedData) {
-                // The source value was changed, so we can call
-                // removeSource(LiveData<S> toRemote) to stop
-                // listening the database LiveData.
-                result.removeSource(dbSource);
-                // Decide whether to fetch potentially updated
-                // data from the network.
-                if (shouldFetch(changedData)) {
-                    // Fetch data from network, persist it into DB
-                    // and then send it back to the UI.
-                    fetchFromNetwork(dbSource);
-                } else {
-                    // Re-attach the database LiveData as a new source.
-                    result.addSource(dbSource, new Observer<ResultType>() {
-                        @Override
-                        public void onChanged(ResultType newData) {
-                            // Persist the new data into the DB.
-                            setValue(Resource.success(newData));
-                        }
-                    });
-                }
+        // Start observing the database for the resource.
+        result.addSource(dbSource, data -> {
+            result.removeSource(dbSource);
+            if (shouldFetch(data)) {
+                fetchFromNetwork(dbSource);
+            } else {
+                result.addSource(dbSource, newData ->
+                        setValue(Resource.success(newData)));
             }
         });
     }
@@ -76,38 +53,26 @@ public abstract class NetworkBoundResource<ResultType, RequestType> {
     @MainThread
     private void setValue(Resource<ResultType> newValue) {
         if (result.getValue() != newValue) {
-            // Note: Use the LiveData method void setValue (T value)
-            // to set the value of a LiveData object. If there are
-            // active observers, the value will be dispatched to them.
-            // This method must be called from the main thread.
-            // If you need set a value from a background thread,
-            // you can use postValue(Object).
             result.setValue(newValue);
         }
     }
 
     /**
-     * Fetch the data from network and persist it into DB and then send it back to the UI.
+     * Fetch the data from network and persist into DB and then send it back to UI.
      */
     private void fetchFromNetwork(final LiveData<ResultType> dbSource) {
         // Create the API call to load data from themoviedb.org.
-        // Note the use of ApiResponse, the generic class we created earlier,
-        // which consists of an HTTP status code, some data and an error.
         final LiveData<ApiResponse<RequestType>> apiResponse = createCall();
 
-        // Re-attach the database LiveData as a new source,
-        // it will dispatch its latest value quickly.
-        result.addSource(dbSource, newData ->
-                setValue(Resource.loading(newData)));
+        // Re-attach dbSource as a new source, it will dispatch its latest value quickly.
+        result.addSource(dbSource, newData -> setValue(Resource.loading(newData)));
 
-        // Start listening to the API response LiveData.
+        // Start observing the API response.
         result.addSource(apiResponse, response -> {
-            // The source value was changed, so we can stop listening
-            // to both the API response LiveData and database LiveData.
             result.removeSource(apiResponse);
             result.removeSource(dbSource);
-            // If the network call completes successfully, save the
-            // response into the database and re-initialize the stream.
+            // If the network call completes successfully, save the response
+            // into the database and re-initialize the stream.
             if (response.isSuccessful() && response.body != null) {
                 appExecutors.diskIO().execute(() -> {
                     saveCallResult(response.body);
@@ -123,16 +88,14 @@ public abstract class NetworkBoundResource<ResultType, RequestType> {
             // If the response is empty, reload from disk whatever we had.
             else if(response.isSuccessful() && response.body == null) {
                 appExecutors.mainThread().execute(() ->
-                        result.addSource(loadFromDb(), newData ->
-                                setValue(Resource.success(newData))));
+                        result.addSource(loadFromDb(),
+                                newData -> setValue(Resource.success(newData))));
             }
             // If network request fails, dispatch a failure directly.
             else {
                 onFetchFailed();
-                result.addSource(dbSource, newData -> {
-                    String errorMessage = response.getErrorMessage();
-                    setValue(Resource.error(errorMessage, newData));
-                });
+                result.addSource(dbSource, newData ->
+                        setValue(Resource.error(response.getError().getMessage(), newData)));
             }
         });
     }

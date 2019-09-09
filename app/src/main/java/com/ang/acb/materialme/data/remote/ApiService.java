@@ -8,6 +8,9 @@ import java.util.List;
 
 import retrofit2.http.GET;
 
+/**
+ * Defines the REST API access points for Retrofit.
+ */
 public interface ApiService {
 
     @GET("xyz-reader.json")

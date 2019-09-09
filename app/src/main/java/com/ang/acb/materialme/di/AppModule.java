@@ -7,14 +7,12 @@ import androidx.room.Room;
 import com.ang.acb.materialme.data.local.AppDatabase;
 import com.ang.acb.materialme.data.local.ArticleDao;
 import com.ang.acb.materialme.data.remote.ApiService;
-import com.ang.acb.materialme.data.remote.LiveDataCallAdapterFactory;
+import com.ang.acb.materialme.utils.LiveDataCallAdapterFactory;
 
 import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import okhttp3.OkHttpClient;
-import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -51,8 +49,8 @@ class AppModule {
         return new Retrofit.Builder()
                 .baseUrl("https://d17h27t6h515a5.cloudfront.net/topher/2017/March/58c5d68f_xyz-reader/")
                 // Configure which converter is used for the data serialization.
-                // Gson is a Java serialization/deserialization library to convert
-                // Java Objects into JSON and back.
+                // Gson is a Java serialization/deserialization library that
+                // converts Java Objects into JSON and back.
                 .addConverterFactory(GsonConverterFactory.create())
                 // Add a call adapter factory for supporting service method
                 // return types other than Retrofit2.Call. We will use a custom
