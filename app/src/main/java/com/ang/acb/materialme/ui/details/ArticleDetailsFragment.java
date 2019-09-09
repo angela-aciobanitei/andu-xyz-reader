@@ -8,7 +8,7 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ShareCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.navigation.fragment.NavHostFragment;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,7 +21,6 @@ import com.ang.acb.materialme.databinding.FragmentArticleDetailsBinding;
 import com.ang.acb.materialme.ui.common.ArticlesViewModel;
 import com.ang.acb.materialme.ui.common.MainActivity;
 import com.ang.acb.materialme.utils.InjectorUtils;
-import com.ang.acb.materialme.utils.ViewModelFactory;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -81,6 +80,11 @@ public class ArticleDetailsFragment extends Fragment {
             ((MainActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             ((MainActivity)getActivity()).getSupportActionBar().setDisplayShowTitleEnabled(false);
         }
+
+        binding.detailsToolbar.setNavigationOnClickListener(view ->
+                // Attempts to navigate up in the navigation hierarchy.
+                NavHostFragment.findNavController(
+                        ArticleDetailsFragment.this).navigateUp());
     }
 
     private void setupShareFab() {
@@ -96,10 +100,8 @@ public class ArticleDetailsFragment extends Fragment {
     }
 
     private void initViewModel() {
-        ViewModelFactory viewModelFactory = InjectorUtils.provideViewModelFactory(getActivity());
-        viewModel = ViewModelProviders.of(this, viewModelFactory)
-                .get(ArticlesViewModel.class);
-        Timber.d("Setup article details view model.");
+        viewModel = InjectorUtils.provideViewModel(getActivity());
+        Timber.d("Setup articles view model.");
     }
 
     private void observeArticleDetails() {
@@ -108,7 +110,7 @@ public class ArticleDetailsFragment extends Fragment {
                 new Observer<Resource<List<Article>>>() {
                     @Override
                     public void onChanged(Resource<List<Article>> resource) {
-                        Timber.d("Observe article list.");
+                        Timber.d("Observe article item.");
                         if (resource != null && resource.data != null) {
                             binding.setArticle(resource.data.get(position));
                         }

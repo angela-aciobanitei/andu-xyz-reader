@@ -6,17 +6,14 @@ import android.os.Bundle;
 
 import com.ang.acb.materialme.R;
 
-
+/**
+ * An activity that inflates a layout that has a NavHostFragment.
+ */
 public class MainActivity extends AppCompatActivity {
-
-    private NavigationController navigationController;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        navigationController = new NavigationController(this);
-        navigationController.navigateToArticleList();
     }
 }

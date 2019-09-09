@@ -13,11 +13,11 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public class ArticlesViewPagerAdapter extends FragmentStatePagerAdapter {
+public class ViewPagerAdapter extends FragmentStatePagerAdapter {
 
     private List<Article> articleList;
 
-    public ArticlesViewPagerAdapter(@NonNull FragmentManager fm, int behavior) {
+    public ViewPagerAdapter(@NonNull FragmentManager fm, int behavior) {
         super(fm, behavior);
     }
 

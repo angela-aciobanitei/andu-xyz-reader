@@ -7,21 +7,17 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
 import androidx.viewpager.widget.ViewPager;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.ang.acb.materialme.R;
 import com.ang.acb.materialme.data.model.Article;
 import com.ang.acb.materialme.data.model.Resource;
-import com.ang.acb.materialme.databinding.FragmentArticleDetailsBinding;
 import com.ang.acb.materialme.databinding.FragmentArticlesViewPagerBinding;
 import com.ang.acb.materialme.ui.common.ArticlesViewModel;
 import com.ang.acb.materialme.utils.InjectorUtils;
-import com.ang.acb.materialme.utils.ViewModelFactory;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -33,11 +29,11 @@ import static androidx.fragment.app.FragmentStatePagerAdapter.BEHAVIOR_RESUME_ON
 
 public class ArticlesViewPagerFragment extends Fragment {
 
-    private static final String ARG_POSITION = "ARG_POSITION";
+    public static final String ARG_POSITION = "ARG_POSITION";
 
     private FragmentArticlesViewPagerBinding binding;
     private ArticlesViewModel viewModel;
-    private ArticlesViewPagerAdapter viewPagerAdapter;
+    private ViewPagerAdapter viewPagerAdapter;
     private int position;
 
 
@@ -77,31 +73,32 @@ public class ArticlesViewPagerFragment extends Fragment {
     }
 
     private void initViewModel() {
-        ViewModelFactory viewModelFactory = InjectorUtils.provideViewModelFactory(getActivity());
-        viewModel = ViewModelProviders.of(this, viewModelFactory)
-                .get(ArticlesViewModel.class);
+        viewModel = InjectorUtils.provideViewModel(getActivity());
+        Timber.d("Setup articles view model.");
         viewModel.setCurrentPosition(position);
-        Timber.d("Setup article list view model.");
+        Timber.d("Set current position: %s in articles view model.", position);
     }
 
     private void setupViewPagerAdapter(){
-        viewPagerAdapter = new ArticlesViewPagerAdapter(
-                getChildFragmentManager(),BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
+        viewPagerAdapter = new ViewPagerAdapter(
+                getChildFragmentManager(), BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
         binding.articlesViewPager.setAdapter(viewPagerAdapter);
     }
 
     private void populateUi() {
-        viewModel.getArticleListLiveData().observe(this, new Observer<Resource<List<Article>>>() {
-            @Override
-            public void onChanged(Resource<List<Article>> resource) {
-                if (resource != null && resource.data != null) {
-                    viewPagerAdapter.submitList(resource.data);
-                    binding.articlesViewPager.setCurrentItem(viewModel.getCurrentPosition());
-                }
-            }
+        viewModel.getArticleListLiveData().observe(
+                getViewLifecycleOwner(),
+                new Observer<Resource<List<Article>>>() {
+                    @Override
+                    public void onChanged(Resource<List<Article>> resource) {
+                        if (resource != null && resource.data != null) {
+                            viewPagerAdapter.submitList(resource.data);
+                            binding.articlesViewPager.setCurrentItem(viewModel.getCurrentPosition());
+                        }
+                    }
         });
 
-        // Save current page position in articles view model
+        // Save current page position in articles view model.
         binding.articlesViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float offset, int offsetPixels) {}

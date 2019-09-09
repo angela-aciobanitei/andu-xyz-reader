@@ -7,7 +7,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 
 import android.view.LayoutInflater;
@@ -20,10 +20,8 @@ import com.ang.acb.materialme.data.model.Resource;
 import com.ang.acb.materialme.databinding.FragmentArticleListBinding;
 import com.ang.acb.materialme.ui.common.ArticlesViewModel;
 import com.ang.acb.materialme.ui.common.MainActivity;
-import com.ang.acb.materialme.ui.common.NavigationController;
 import com.ang.acb.materialme.utils.InjectorUtils;
 import com.ang.acb.materialme.utils.SpacingItemDecoration;
-import com.ang.acb.materialme.utils.ViewModelFactory;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -31,12 +29,13 @@ import java.util.List;
 
 import timber.log.Timber;
 
+import static com.ang.acb.materialme.ui.details.ArticlesViewPagerFragment.ARG_POSITION;
+
 public class ArticleListFragment extends Fragment {
 
     private FragmentArticleListBinding binding;
     private ArticlesViewModel viewModel;
     private ArticlesAdapter adapter;
-    private NavigationController navigationController;
 
     // Required empty public constructor
     public ArticleListFragment() {}
@@ -55,39 +54,53 @@ public class ArticleListFragment extends Fragment {
 
         setupToolbar();
         setupRecyclerView();
+        setupAdapter();
         initViewModel();
         populateUi();
     }
 
+    private MainActivity getHostActivity() {
+        return (MainActivity)getActivity();
+    }
+
     private void setupToolbar(){
-        ((MainActivity)getActivity()).setSupportActionBar(binding.mainToolbar);
-        if(((MainActivity)getActivity()).getSupportActionBar() != null) {
-            ((MainActivity)getActivity()).getSupportActionBar().setDisplayShowTitleEnabled(false);
+        getHostActivity().setSupportActionBar(binding.mainToolbar);
+        if(getHostActivity().getSupportActionBar() != null) {
+            // The activity title/subtitle should not be displayed.
+            getHostActivity().getSupportActionBar().setDisplayShowTitleEnabled(false);
         }
     }
 
     private void initViewModel() {
-        ViewModelFactory viewModelFactory = InjectorUtils.provideViewModelFactory(getActivity());
-        viewModel = ViewModelProviders.of(this, viewModelFactory)
-                .get(ArticlesViewModel.class);
-        Timber.d("Setup article list view model.");
+        viewModel = InjectorUtils.provideViewModel(getHostActivity());
+        Timber.d("Setup articles view model.");
     }
 
     private void setupRecyclerView(){
-        GridLayoutManager layoutManager = new GridLayoutManager(
-                getActivity(), getResources().getInteger(R.integer.grid_column_count));
-        binding.rvArticleList.setLayoutManager(layoutManager);
+        binding.rvArticleList.setLayoutManager(new GridLayoutManager(
+                getHostActivity(), getResources().getInteger(R.integer.grid_column_count)));
         binding.rvArticleList.addItemDecoration(
-                new SpacingItemDecoration(getActivity(), R.dimen.item_offset));
-        navigationController = new NavigationController((MainActivity) getActivity());
-        adapter =  new ArticlesAdapter(position ->
-                navigationController.navigateToArticlesPager(position));
+                new SpacingItemDecoration(getHostActivity(), R.dimen.item_offset));
+        Timber.d("Setup articles recycle view.");
+    }
+
+    private void setupAdapter() {
+        adapter =  new ArticlesAdapter(this::onArticleClicked);
         binding.rvArticleList.setAdapter(adapter);
         Timber.d("Setup article list adapter.");
     }
 
+    private void onArticleClicked(int position) {
+        Bundle bundle = new Bundle() ;
+        bundle.putInt(ARG_POSITION, position);
+        NavHostFragment.findNavController(ArticleListFragment.this)
+                .navigate(R.id.action_article_list_to_articles_view_pager,
+                        bundle, null, null);
+    }
+
     private void populateUi() {
-        viewModel.getArticleListLiveData().observe(this,
+        viewModel.getArticleListLiveData().observe(
+                getViewLifecycleOwner(),
                 new Observer<Resource<List<Article>>>() {
                     @Override
                     public void onChanged(Resource<List<Article>> resource) {
