@@ -18,7 +18,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fitsSystemWindows="true"
-        tools:context=".ui.details.ArticleDetailsActivity">
+        tools:context=".ui.details.DetailsActivity">
 
         <!-- Note: To add a collapsing toolbar to your layout, place
         the CollapsingToolbarLayout inside an AppBarLayout. Then, add

@@ -5,8 +5,7 @@ import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.ang.acb.materialme.data.repository.ArticlesRepository;
-import com.ang.acb.materialme.ui.details.ArticleDetailsViewModel;
-import com.ang.acb.materialme.ui.list.ArticleListViewModel;
+import com.ang.acb.materialme.ui.common.ArticlesViewModel;
 
 /**
  * A factory class for creating ViewModels with a constructor that takes a [ArticlesRepository].
@@ -29,12 +28,9 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
     @NonNull
     @Override
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
-        if (modelClass.isAssignableFrom(ArticleListViewModel.class)) {
+        if (modelClass.isAssignableFrom(ArticlesViewModel.class)) {
             // noinspection unchecked
-            return (T) new ArticleListViewModel(repository);
-        } else if (modelClass.isAssignableFrom(ArticleDetailsViewModel.class)) {
-            // noinspection unchecked
-            return (T) new ArticleDetailsViewModel(repository);
+            return (T) new ArticlesViewModel(repository);
         }
         throw new IllegalArgumentException("Unknown ViewModel class: " + modelClass.getName());
     }

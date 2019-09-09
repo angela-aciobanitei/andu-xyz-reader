@@ -20,8 +20,8 @@ import com.ang.acb.materialme.utils.AppExecutors;
  * See: https://developer.android.com/jetpack/docs/guide#addendum.
  * See: https://github.com/googlesamples/android-architecture-components/tree/master/GithubBrowserSample
  *
- * @param <ResultType>  Type for the Resource data (the data type used locally).
- * @param <RequestType> Type for the API response (the data type returned from the API).
+ * @param <ResultType>  Type for the Resource data.
+ * @param <RequestType> Type for the API response.
  */
 public abstract class NetworkBoundResource<ResultType, RequestType> {
 

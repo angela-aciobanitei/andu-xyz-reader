@@ -16,6 +16,7 @@ import java.util.List;
 
 public class ArticlesRepository {
 
+    // For Singleton instantiation.
     private static volatile ArticlesRepository sInstance;
     private final AppExecutors executors;
     private final AppDatabase database;
@@ -29,6 +30,7 @@ public class ArticlesRepository {
         this.apiService = apiService;
     }
 
+    // Returns the single instance of this class, creating it if necessary.
     public static ArticlesRepository getInstance(AppExecutors executors,
                                                  AppDatabase database,
                                                  ApiService apiService) {

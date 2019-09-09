@@ -1,4 +1,4 @@
-package com.ang.acb.materialme.ui.list;
+package com.ang.acb.materialme.ui.common;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
@@ -9,15 +9,24 @@ import com.ang.acb.materialme.data.repository.ArticlesRepository;
 
 import java.util.List;
 
-public class ArticleListViewModel extends ViewModel {
+public class ArticlesViewModel extends ViewModel {
 
     private ArticlesRepository repository;
+    private int currentPosition;
 
-    public ArticleListViewModel(ArticlesRepository repository) {
+    public ArticlesViewModel(ArticlesRepository repository) {
         this.repository = repository;
     }
 
     public LiveData<Resource<List<Article>>> getArticleListLiveData() {
         return repository.getAllArticles();
+    }
+
+    public int getCurrentPosition() {
+        return currentPosition;
+    }
+
+    public void setCurrentPosition(int currentPosition) {
+        this.currentPosition = currentPosition;
     }
 }

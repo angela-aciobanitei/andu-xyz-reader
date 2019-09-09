@@ -4,5 +4,8 @@
     <color name="colorPrimaryDark">#022B42</color>
     <color name="colorAccent">#F0672B</color>
 
+    <color name="photoPlaceholder">#ccc</color>
+    <color name="ltgray">#ffe0e0e0</color>
+
     <color name="colorImagePlaceholder">#2E2E2E</color>
 </resources>
