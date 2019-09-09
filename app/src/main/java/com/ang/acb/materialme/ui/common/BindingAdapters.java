@@ -20,9 +20,11 @@ public class BindingAdapters {
     @BindingAdapter({"imageUrl"})
     public static void bindImage(ImageView imageView, String imageUrl) {
                 Glide.with(imageView.getContext())
-                .load(imageUrl)
-                .placeholder(R.color.colorImagePlaceholder)
-                .into(imageView);
+                        .asBitmap()
+                        .load(imageUrl)
+                        .dontAnimate()
+                        .placeholder(R.color.photoPlaceholder)
+                        .into(imageView);
     }
 
     @BindingAdapter("toggleVisibility")

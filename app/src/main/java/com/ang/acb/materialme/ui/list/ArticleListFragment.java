@@ -67,8 +67,8 @@ public class ArticleListFragment extends Fragment {
     }
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
 
         setupToolbar();
         setupRecyclerView();
@@ -90,7 +90,7 @@ public class ArticleListFragment extends Fragment {
     }
 
     private void initViewModel() {
-        viewModel = ViewModelProviders.of(getHostActivity(), viewModelFactory)
+        viewModel = ViewModelProviders.of(this, viewModelFactory)
                 .get(ArticlesViewModel.class);
         Timber.d("Setup articles view model.");
     }

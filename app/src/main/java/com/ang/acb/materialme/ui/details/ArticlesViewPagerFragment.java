@@ -44,7 +44,6 @@ public class ArticlesViewPagerFragment extends Fragment {
     @Inject
     public ViewModelProvider.Factory viewModelFactory;
 
-
     // Required empty public constructor
     public ArticlesViewPagerFragment() {}
 
@@ -81,8 +80,8 @@ public class ArticlesViewPagerFragment extends Fragment {
     }
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
 
         initViewModel();
         setupViewPagerAdapter();
@@ -90,7 +89,7 @@ public class ArticlesViewPagerFragment extends Fragment {
     }
 
     private void initViewModel() {
-        viewModel = ViewModelProviders.of(getActivity(), viewModelFactory)
+        viewModel = ViewModelProviders.of(this, viewModelFactory)
                 .get(ArticlesViewModel.class);
         viewModel.setCurrentPosition(position);
         Timber.d("Set current position: %s in articles view model.", position);

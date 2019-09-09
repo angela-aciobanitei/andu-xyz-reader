@@ -26,7 +26,6 @@ public interface ArticleDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertAllArticles(List<Article> articles);
 
-
     @Transaction
     @Query("SELECT * FROM articles WHERE id= :articleId")
     LiveData<Article> getArticleById(long articleId);

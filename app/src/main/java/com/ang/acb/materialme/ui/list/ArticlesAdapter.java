@@ -73,6 +73,7 @@ public class ArticlesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         void bindTo(Article article) {
             // Bind article data.
             binding.setArticle(article);
+
             // Binding must be executed immediately.
             binding.executePendingBindings();
         }

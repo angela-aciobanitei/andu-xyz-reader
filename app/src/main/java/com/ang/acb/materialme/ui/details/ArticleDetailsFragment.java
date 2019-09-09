@@ -80,8 +80,8 @@ public class ArticleDetailsFragment extends Fragment {
     }
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
 
         setupToolbar();
         setupShareFab();
@@ -117,7 +117,7 @@ public class ArticleDetailsFragment extends Fragment {
     }
 
     private void initViewModel() {
-        viewModel = ViewModelProviders.of(getActivity(), viewModelFactory)
+        viewModel = ViewModelProviders.of(this, viewModelFactory)
                 .get(ArticlesViewModel.class);
         Timber.d("Setup articles view model.");
     }
