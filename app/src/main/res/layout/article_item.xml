@@ -10,7 +10,7 @@
             type="com.ang.acb.materialme.data.model.Article" />
     </data>
 
-    <androidx.cardview.widget.CardView
+    <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:clickable="true"
@@ -29,6 +29,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:contentDescription="@string/article_thumbnail"
+                android:scaleType="centerCrop"
                 tools:background="@color/photoPlaceholder"/>
 
             <TextView
@@ -42,7 +43,9 @@
                 android:paddingEnd="8dp"
                 android:paddingBottom="4dp"
                 android:text="@{article.getTitle()}"
-                android:textAppearance="@style/TextAppearance.AppCompat.Title"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                android:textColor="@android:color/white"
+                tools:textColor="@android:color/black"
                 tools:text="Ebooks, Neither E, Nor Books" />
 
             <TextView
@@ -55,11 +58,13 @@
                 android:paddingEnd="8dp"
                 android:paddingBottom="8dp"
                 android:text="@{article.getAuthor()}"
-                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                android:textColor="@android:color/white"
+                tools:textColor="@android:color/black"
                 tools:text="Cory Doctorow"/>
 
         </LinearLayout>
 
-    </androidx.cardview.widget.CardView>
+    </com.google.android.material.card.MaterialCardView>
 
 </layout>

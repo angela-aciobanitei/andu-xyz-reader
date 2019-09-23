@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <dimen name="item_offset">4dp</dimen>
     <dimen name="tall_toolbar_height">256dp</dimen>
-    <dimen name="item_offset">3dp</dimen>
     <dimen name="fab_elevation">2dp</dimen>
     <dimen name="fab_margin">24dp</dimen>
+    <dimen name="detail_metabar_vertical_padding">16dp</dimen>
+    <dimen name="detail_inner_horizontal_margin">16dp</dimen>
+    <dimen name="detail_metabar_title_bottom_padding">8dp</dimen>
+    <dimen name="detail_metabar_vertical_margin">16dp</dimen>
+    <dimen name="detail_fab_margin_end">24dp</dimen>
+    <dimen name="detail_fab_margin_top">-45dp</dimen>
 </resources>

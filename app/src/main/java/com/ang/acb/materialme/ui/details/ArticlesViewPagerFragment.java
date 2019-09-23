@@ -4,7 +4,6 @@ package com.ang.acb.materialme.ui.details;
 import android.content.Context;
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
@@ -102,7 +101,7 @@ public class ArticlesViewPagerFragment extends Fragment {
     }
 
     private void populateUi() {
-        viewModel.getArticleListLiveData().observe(
+        viewModel.getObservableArticles().observe(
                 getViewLifecycleOwner(),
                 new Observer<Resource<List<Article>>>() {
                     @Override

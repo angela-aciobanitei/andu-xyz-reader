@@ -11,16 +11,17 @@ import androidx.recyclerview.widget.RecyclerView;
 /**
  * A custom ItemDecoration to provide equal column spacing for a RecyclerView that lays out items in a grid.
  * See: https://stackoverflow.com/questions/28531996/android-recyclerview-gridlayoutmanager-column-spacing
+ * See: https://gist.github.com/yqritc/ccca77dc42f2364777e1
  */
-public class SpacingItemDecoration extends RecyclerView.ItemDecoration {
+public class GridMarginDecoration extends RecyclerView.ItemDecoration {
 
     private int itemOffset;
 
-    private SpacingItemDecoration(int itemOffset) {
+    private GridMarginDecoration(int itemOffset) {
         this.itemOffset = itemOffset;
     }
 
-    public SpacingItemDecoration(@NonNull Context context, @DimenRes int itemOffsetId) {
+    public GridMarginDecoration(@NonNull Context context, @DimenRes int itemOffsetId) {
         this(context.getResources().getDimensionPixelSize(itemOffsetId));
     }
 

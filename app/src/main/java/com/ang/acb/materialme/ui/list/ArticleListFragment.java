@@ -22,7 +22,7 @@ import com.ang.acb.materialme.data.model.Resource;
 import com.ang.acb.materialme.databinding.FragmentArticleListBinding;
 import com.ang.acb.materialme.ui.viewmodel.ArticlesViewModel;
 import com.ang.acb.materialme.ui.common.MainActivity;
-import com.ang.acb.materialme.utils.SpacingItemDecoration;
+import com.ang.acb.materialme.utils.GridMarginDecoration;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -99,7 +99,7 @@ public class ArticleListFragment extends Fragment {
         binding.rvArticleList.setLayoutManager(new StaggeredGridLayoutManager(
                 getResources().getInteger(R.integer.grid_column_count), VERTICAL));
         binding.rvArticleList.addItemDecoration(
-                new SpacingItemDecoration(getHostActivity(), R.dimen.item_offset));
+                new GridMarginDecoration(getHostActivity(), R.dimen.item_offset));
         Timber.d("Setup articles recycle view.");
     }
 
@@ -118,7 +118,7 @@ public class ArticleListFragment extends Fragment {
     }
 
     private void populateUi() {
-        viewModel.getArticleListLiveData().observe(
+        viewModel.getObservableArticles().observe(
                 getViewLifecycleOwner(),
                 new Observer<Resource<List<Article>>>() {
                     @Override

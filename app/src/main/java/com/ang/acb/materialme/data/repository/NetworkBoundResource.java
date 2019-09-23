@@ -61,7 +61,7 @@ public abstract class NetworkBoundResource<ResultType, RequestType> {
      * Fetch the data from network and persist into DB and then send it back to UI.
      */
     private void fetchFromNetwork(final LiveData<ResultType> dbSource) {
-        // Create the API call to load data from themoviedb.org.
+        // Create the API call to load data.
         final LiveData<ApiResponse<RequestType>> apiResponse = createCall();
 
         // Re-attach dbSource as a new source, it will dispatch its latest value quickly.

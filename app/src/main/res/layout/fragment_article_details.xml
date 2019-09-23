@@ -94,16 +94,5 @@
                 app:article="@{article}" />
         </androidx.core.widget.NestedScrollView>
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/details_share_fab"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|end"
-            android:layout_marginEnd="@dimen/fab_margin"
-            android:layout_marginBottom="@dimen/fab_margin"
-            android:contentDescription="@string/action_share"
-            android:src="@drawable/ic_share_white_24dp"
-            app:elevation="4dp" />
-
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>
