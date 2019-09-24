@@ -5,8 +5,10 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ShareCompat;
+import androidx.core.view.ViewCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -36,7 +38,6 @@ import com.bumptech.glide.request.target.Target;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -47,10 +48,12 @@ import timber.log.Timber;
 public class ArticleDetailsFragment extends Fragment {
 
     private static final String ARG_POSITION = "ARG_POSITION";
+    public static final String ARG_ARTICLE_ID = "ARG_ARTICLE_ID";
 
     private FragmentArticleDetailsBinding binding;
     private ArticlesViewModel viewModel;
     private int position;
+    private long articleId;
 
     @Inject
     public ViewModelProvider.Factory viewModelFactory;
@@ -58,18 +61,20 @@ public class ArticleDetailsFragment extends Fragment {
     // Required empty public constructor
     public ArticleDetailsFragment() {}
 
-    public static ArticleDetailsFragment newInstance(int position) {
+    public static ArticleDetailsFragment newInstance(int position, long articleId) {
         ArticleDetailsFragment fragment = new ArticleDetailsFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_POSITION, position);
+        args.putLong(ARG_ARTICLE_ID, articleId);
         fragment.setArguments(args);
         return fragment;
     }
 
     @Override
     public void onAttach(@NotNull Context context) {
-        // Note: when using Dagger for injecting Fragment objects, inject as early as possible.
-        // For this reason, call AndroidInjection.inject() in onAttach(). This also prevents
+        // Note: when using Dagger for injecting Fragment objects,
+        // inject as early as possible. For this reason, call
+        // AndroidInjection.inject() in onAttach(). This also prevents
         // inconsistencies if the Fragment is reattached.
         AndroidSupportInjection.inject(this);
         super.onAttach(context);
@@ -80,19 +85,25 @@ public class ArticleDetailsFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             position = getArguments().getInt(ARG_POSITION);
+            articleId = getArguments().getLong(ARG_ARTICLE_ID);
         }
     }
 
     @Override
     public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
         binding = FragmentArticleDetailsBinding.inflate(inflater, container, false);
+
+        // TODO Set the string value of the article id as the unique transition name for the view.
+        ViewCompat.setTransitionName(binding.detailsArticlePhoto, String.valueOf(articleId));
+
         return binding.getRoot();
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
         setupToolbar();
         setupShareFab();
@@ -180,7 +191,7 @@ public class ArticleDetailsFragment extends Fragment {
                         @Override
                         public boolean onLoadFailed(@Nullable GlideException e, Object
                                 model, Target<Bitmap> target, boolean isFirstResource) {
-                            // TODO scheduleStartPostponedTransition();
+                            scheduleStartPostponedTransition();
                             return false;
                         }
 
@@ -188,7 +199,7 @@ public class ArticleDetailsFragment extends Fragment {
                         public boolean onResourceReady(Bitmap resource, Object model, Target<Bitmap> target,
                                                        DataSource dataSource, boolean isFirstResource) {
                             generatePalette(resource);
-                            // TODO scheduleStartPostponedTransition();
+                            scheduleStartPostponedTransition();
                             return false;
                         }
                     })
@@ -219,13 +230,13 @@ public class ArticleDetailsFragment extends Fragment {
      * sure that the image view is drawn.
      * See: https://medium.com/@ayushkhare/shared-element-transitions-4a645a30c848
      */
-    private void scheduleStartPostponedTransition(final ImageView imageView) {
+    private void scheduleStartPostponedTransition() {
         // To make sure our shared view is drawn, we use the ViewTreeObserver class.
-        imageView.getViewTreeObserver().addOnPreDrawListener(
+        binding.getRoot().getViewTreeObserver().addOnPreDrawListener(
                 new ViewTreeObserver.OnPreDrawListener() {
                     @Override
                     public boolean onPreDraw() {
-                        imageView.getViewTreeObserver().removeOnPreDrawListener(this);
+                        binding.getRoot().getViewTreeObserver().removeOnPreDrawListener(this);
                         getParentFragment().startPostponedEnterTransition();
                         return true;
                     }

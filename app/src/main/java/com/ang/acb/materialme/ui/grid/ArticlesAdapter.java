@@ -15,41 +15,23 @@ import java.util.List;
 public class ArticlesAdapter extends RecyclerView.Adapter<ArticleViewHolder>{
 
     private List<Article> articleList;
-    private ArticleClickCallback clickCallback;
+    private ViewHolderListener listener;
 
-    public interface ArticleClickCallback {
-        void onArticleClicked(int position);
-    }
-
-    public ArticlesAdapter(ArticleClickCallback clickCallback) {
-        this.clickCallback = clickCallback;
+    public ArticlesAdapter(ViewHolderListener listener) {
+        this.listener = listener;
     }
 
     @NonNull
     @Override
     public ArticleViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        // Inflate view and obtain an instance of the binding class.
-        ArticleItemBinding binding = ArticleItemBinding.inflate(
-                LayoutInflater.from(parent.getContext()),
-                parent,
-                false);
-        return new ArticleViewHolder(binding);
+        return ArticleViewHolder.create(parent, listener);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ArticleViewHolder holder, int position) {
         // Bind article data
-        Article article = articleList.get(position);
-        holder.bindTo(article);
-
-        // Handle click item events.
-        holder.itemView.setOnClickListener(v -> {
-            if (article != null && clickCallback != null) {
-                clickCallback.onArticleClicked(position);
-            }
-        });
+        holder.bindTo(articleList.get(position));
     }
-
 
     @Override
     public int getItemCount() {

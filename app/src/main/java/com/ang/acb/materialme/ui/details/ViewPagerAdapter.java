@@ -24,7 +24,7 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
     @NotNull
     @Override
     public Fragment getItem(int position) {
-        return ArticleDetailsFragment.newInstance(position);
+        return ArticleDetailsFragment.newInstance(position, articleList.get(position).getId());
     }
 
     @Override

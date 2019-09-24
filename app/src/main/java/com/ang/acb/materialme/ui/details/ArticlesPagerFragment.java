@@ -36,10 +36,11 @@ import static androidx.fragment.app.FragmentStatePagerAdapter.BEHAVIOR_RESUME_ON
 
 /**
  * A fragment for displaying a pager of articles.
+ *
+ * See: https://github.com/android/animation-samples/tree/master/GridToPager
+ * See: https://android-developers.googleblog.com/2018/02/continuous-shared-element-transitions.html
  */
 public class ArticlesPagerFragment extends Fragment {
-
-    public static final String ARG_POSITION = "ARG_POSITION";
 
     private FragmentArticlesViewPagerBinding binding;
     private ArticlesViewModel viewModel;
@@ -52,14 +53,6 @@ public class ArticlesPagerFragment extends Fragment {
     // Required empty public constructor
     public ArticlesPagerFragment() {}
 
-    public static ArticlesPagerFragment newInstance(int position) {
-        ArticlesPagerFragment fragment = new ArticlesPagerFragment();
-        Bundle args = new Bundle();
-        args.putInt(ARG_POSITION, position);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
     @Override
     public void onAttach(@NotNull Context context) {
         // Note: when using Dagger for injecting Fragment objects, inject as early as possible.
@@ -67,14 +60,6 @@ public class ArticlesPagerFragment extends Fragment {
         // inconsistencies if the Fragment is reattached.
         AndroidSupportInjection.inject(this);
         super.onAttach(context);
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            position = getArguments().getInt(ARG_POSITION);
-        }
     }
 
     @Override
@@ -87,10 +72,11 @@ public class ArticlesPagerFragment extends Fragment {
         populateUi();
         updateCurrentPagePosition();
 
-        // TODO prepareSharedElementTransition();
+        prepareSharedElementTransition();
+
         // Avoid a postponeEnterTransition() on orientation change,
         // and postpone only of first creation.
-        // TODO if (savedInstanceState == null) postponeEnterTransition();
+        if (savedInstanceState == null) postponeEnterTransition();
 
         return binding.getRoot();
     }
@@ -141,8 +127,6 @@ public class ArticlesPagerFragment extends Fragment {
 
     /**
      * Prepares the shared element transition from and back to the articles grid fragment.
-     * See: https://github.com/android/animation-samples/tree/master/GridToPager
-     * See: https://android-developers.googleblog.com/2018/02/continuous-shared-element-transitions.html
      */
     private void prepareSharedElementTransition() {
         setSharedElementEnterTransition(TransitionInflater.from(getContext())
