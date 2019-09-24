@@ -1,4 +1,4 @@
-package com.ang.acb.materialme.ui.list;
+package com.ang.acb.materialme.ui.grid;
 
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -9,7 +9,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.ang.acb.materialme.data.model.Article;
 import com.ang.acb.materialme.databinding.ArticleItemBinding;
-
 
 import java.util.List;
 

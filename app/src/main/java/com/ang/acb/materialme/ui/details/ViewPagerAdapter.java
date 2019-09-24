@@ -17,14 +17,8 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
 
     private List<Article> articleList;
 
-    public ViewPagerAdapter(@NonNull FragmentManager fm, int behavior) {
-        super(fm, behavior);
-    }
-
-    @NonNull
-    @Override
-    public Object instantiateItem(@NonNull ViewGroup container, int position) {
-        return super.instantiateItem(container, position);
+    public ViewPagerAdapter(@NonNull FragmentManager fragmentManager, int behavior) {
+        super(fragmentManager, behavior);
     }
 
     @NotNull
@@ -38,10 +32,6 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
         return articleList != null ? articleList.size() : 0;
     }
 
-    @Override
-    public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
-        super.destroyItem(container, position, object);
-    }
 
     public void submitList(List<Article> articles) {
         articleList = articles;

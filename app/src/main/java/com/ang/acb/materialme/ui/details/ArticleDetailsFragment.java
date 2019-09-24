@@ -18,6 +18,8 @@ import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
+import android.widget.ImageView;
 
 import com.ang.acb.materialme.R;
 import com.ang.acb.materialme.data.model.Article;
@@ -173,26 +175,20 @@ public class ArticleDetailsFragment extends Fragment {
                     .load(article.getPhotoUrl())
                     .dontAnimate()
                     .placeholder(R.color.photoPlaceholder)
+                    // This listener tells when the image is done loading
                     .listener(new RequestListener<Bitmap>() {
                         @Override
                         public boolean onLoadFailed(@Nullable GlideException e, Object
                                 model, Target<Bitmap> target, boolean isFirstResource) {
+                            // TODO scheduleStartPostponedTransition();
                             return false;
                         }
 
                         @Override
                         public boolean onResourceReady(Bitmap resource, Object model, Target<Bitmap> target,
                                                        DataSource dataSource, boolean isFirstResource) {
-                            // Generate palette synchronously
-                            Palette.from(resource).generate(new Palette.PaletteAsyncListener() {
-                                public void onGenerated(Palette palette) {
-                                    Palette.Swatch swatch = Utils.getDominantColor(palette);
-                                    if (swatch != null) {
-                                        binding.contentPartialDetails.metaBar.setBackgroundColor(swatch.getRgb());
-                                        binding.detailsCollapsingToolbar.setContentScrimColor(swatch.getRgb());
-                                    }
-                                }
-                            });
+                            generatePalette(resource);
+                            // TODO scheduleStartPostponedTransition();
                             return false;
                         }
                     })
@@ -200,5 +196,39 @@ public class ArticleDetailsFragment extends Fragment {
 
             binding.executePendingBindings();
         }
+    }
+
+    private void generatePalette(Bitmap resource) {
+        // Generate palette synchronously.
+        Palette.from(resource).generate(new Palette.PaletteAsyncListener() {
+            public void onGenerated(Palette palette) {
+                Palette.Swatch swatch = Utils.getDominantColor(palette);
+                if (swatch != null) {
+                    binding.contentPartialDetails.metaBar.setBackgroundColor(swatch.getRgb());
+                    binding.detailsCollapsingToolbar.setContentScrimColor(swatch.getRgb());
+                }
+            }
+        });
+    }
+
+    /**
+     * Helper method that calls startPostponedEnterTransition().
+     * Note: postponeEnterTransition() is called on the parent, ArticlesPagerFragment, so
+     * startPostponedEnterTransition() should also be called on it to get the transition
+     * going. But before calling startPostponedEnterTransition(), we first need to make
+     * sure that the image view is drawn.
+     * See: https://medium.com/@ayushkhare/shared-element-transitions-4a645a30c848
+     */
+    private void scheduleStartPostponedTransition(final ImageView imageView) {
+        // To make sure our shared view is drawn, we use the ViewTreeObserver class.
+        imageView.getViewTreeObserver().addOnPreDrawListener(
+                new ViewTreeObserver.OnPreDrawListener() {
+                    @Override
+                    public boolean onPreDraw() {
+                        imageView.getViewTreeObserver().removeOnPreDrawListener(this);
+                        getParentFragment().startPostponedEnterTransition();
+                        return true;
+                    }
+                });
     }
 }

@@ -1,20 +1,21 @@
 package com.ang.acb.materialme.ui.details;
 
-
 import android.content.Context;
 import android.os.Bundle;
 
-import androidx.annotation.Nullable;
+import androidx.core.app.SharedElementCallback;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.viewpager.widget.ViewPager;
 
+import android.transition.TransitionInflater;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.ang.acb.materialme.R;
 import com.ang.acb.materialme.data.model.Article;
 import com.ang.acb.materialme.data.model.Resource;
 import com.ang.acb.materialme.databinding.FragmentArticlesViewPagerBinding;
@@ -23,6 +24,7 @@ import com.ang.acb.materialme.ui.viewmodel.ArticlesViewModel;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -31,7 +33,11 @@ import timber.log.Timber;
 
 import static androidx.fragment.app.FragmentStatePagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT;
 
-public class ArticlesViewPagerFragment extends Fragment {
+
+/**
+ * A fragment for displaying a pager of articles.
+ */
+public class ArticlesPagerFragment extends Fragment {
 
     public static final String ARG_POSITION = "ARG_POSITION";
 
@@ -44,10 +50,10 @@ public class ArticlesViewPagerFragment extends Fragment {
     public ViewModelProvider.Factory viewModelFactory;
 
     // Required empty public constructor
-    public ArticlesViewPagerFragment() {}
+    public ArticlesPagerFragment() {}
 
-    public static ArticlesViewPagerFragment newInstance(int position) {
-        ArticlesViewPagerFragment fragment = new ArticlesViewPagerFragment();
+    public static ArticlesPagerFragment newInstance(int position) {
+        ArticlesPagerFragment fragment = new ArticlesPagerFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_POSITION, position);
         fragment.setArguments(args);
@@ -75,16 +81,18 @@ public class ArticlesViewPagerFragment extends Fragment {
     public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         binding = FragmentArticlesViewPagerBinding.inflate(inflater, container, false);
-        return binding.getRoot();
-    }
-
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
 
         initViewModel();
         setupViewPagerAdapter();
         populateUi();
+        updateCurrentPagePosition();
+
+        // TODO prepareSharedElementTransition();
+        // Avoid a postponeEnterTransition() on orientation change,
+        // and postpone only of first creation.
+        // TODO if (savedInstanceState == null) postponeEnterTransition();
+
+        return binding.getRoot();
     }
 
     private void initViewModel() {
@@ -95,6 +103,7 @@ public class ArticlesViewPagerFragment extends Fragment {
     }
 
     private void setupViewPagerAdapter(){
+        // Initialize ViewPagerAdapter with the child fragment manager.
         viewPagerAdapter = new ViewPagerAdapter(
                 getChildFragmentManager(), BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
         binding.articlesViewPager.setAdapter(viewPagerAdapter);
@@ -112,7 +121,9 @@ public class ArticlesViewPagerFragment extends Fragment {
                         }
                     }
         });
+    }
 
+    private void updateCurrentPagePosition(){
         // Save current page position in articles view model.
         binding.articlesViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
@@ -126,7 +137,39 @@ public class ArticlesViewPagerFragment extends Fragment {
             @Override
             public void onPageScrollStateChanged(int state) {}
         });
+    }
 
+    /**
+     * Prepares the shared element transition from and back to the articles grid fragment.
+     * See: https://github.com/android/animation-samples/tree/master/GridToPager
+     * See: https://android-developers.googleblog.com/2018/02/continuous-shared-element-transitions.html
+     */
+    private void prepareSharedElementTransition() {
+        setSharedElementEnterTransition(TransitionInflater.from(getContext())
+                .inflateTransition(R.transition.image_shared_element_transition));
+
+        // Note: a similar mapping is set in the ArticlesGridFragment
+        // with a setExitSharedElementCallback().
+        setEnterSharedElementCallback(
+                new SharedElementCallback() {
+                    @Override
+                    public void onMapSharedElements(List<String> names, Map<String, View> sharedElements) {
+                        // Locate the image view at the primary fragment (the ArticleDetailsFragment
+                        // that is currently visible). To locate the fragment, call instantiateItem
+                        // with the selection position. At this stage, the method will simply return
+                        // the fragment at the position and will not create a new one.
+                        Fragment currentFragment = (Fragment) viewPagerAdapter.instantiateItem(
+                                binding.articlesViewPager, viewModel.getCurrentPosition());
+
+                        View view = currentFragment.getView();
+                        if (view == null) return;
+
+                        // Map the first shared element name to the child ImageView.
+                        sharedElements.put(
+                                names.get(0),
+                                view.findViewById(R.id.details_article_photo));
+                    }
+                });
     }
 
 }

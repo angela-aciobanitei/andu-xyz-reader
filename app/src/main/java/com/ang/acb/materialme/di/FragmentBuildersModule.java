@@ -1,8 +1,8 @@
 package com.ang.acb.materialme.di;
 
 import com.ang.acb.materialme.ui.details.ArticleDetailsFragment;
-import com.ang.acb.materialme.ui.details.ArticlesViewPagerFragment;
-import com.ang.acb.materialme.ui.list.ArticleListFragment;
+import com.ang.acb.materialme.ui.details.ArticlesPagerFragment;
+import com.ang.acb.materialme.ui.grid.ArticleGridFragment;
 
 import dagger.Module;
 import dagger.android.ContributesAndroidInjector;
@@ -11,10 +11,10 @@ import dagger.android.ContributesAndroidInjector;
 public abstract class FragmentBuildersModule {
 
     @ContributesAndroidInjector
-    abstract ArticleListFragment contributeArticleListFragment();
+    abstract ArticleGridFragment contributeArticleListFragment();
 
     @ContributesAndroidInjector
-    abstract ArticlesViewPagerFragment contributeArticlesViewPagerFragment();
+    abstract ArticlesPagerFragment contributeArticlesViewPagerFragment();
 
     @ContributesAndroidInjector
     abstract ArticleDetailsFragment contributeArticleDetailsFragment();

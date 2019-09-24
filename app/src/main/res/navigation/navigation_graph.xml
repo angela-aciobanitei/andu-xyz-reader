@@ -13,9 +13,9 @@ https://developer.android.com/guide/navigation/navigation-getting-started#create
 
     <fragment
         android:id="@+id/article_list_destination"
-        android:name="com.ang.acb.materialme.ui.list.ArticleListFragment"
+        android:name="com.ang.acb.materialme.ui.grid.ArticleGridFragment"
         android:label="fragment_article_list"
-        tools:layout="@layout/fragment_article_list">
+        tools:layout="@layout/fragment_article_grid">
         <action
             android:id="@+id/action_article_list_to_articles_view_pager"
             app:destination="@id/articles_pager_destination" />
@@ -27,7 +27,7 @@ https://developer.android.com/guide/navigation/navigation-getting-started#create
 
     <fragment
         android:id="@+id/articles_pager_destination"
-        android:name="com.ang.acb.materialme.ui.details.ArticlesViewPagerFragment"
+        android:name="com.ang.acb.materialme.ui.details.ArticlesPagerFragment"
         android:label="fragment_articles_view_pager"
         tools:layout="@layout/fragment_articles_view_pager" />
 </navigation>

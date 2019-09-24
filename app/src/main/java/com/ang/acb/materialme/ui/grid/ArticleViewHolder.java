@@ -1,4 +1,4 @@
-package com.ang.acb.materialme.ui.list;
+package com.ang.acb.materialme.ui.grid;
 
 import android.graphics.Bitmap;
 
