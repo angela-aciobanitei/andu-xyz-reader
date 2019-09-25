@@ -9,20 +9,16 @@ https://developer.android.com/guide/navigation/navigation-getting-started#create
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/navigation_graph"
-    app:startDestination="@id/article_list_destination">
+    app:startDestination="@id/article_grid_destination">
 
     <fragment
-        android:id="@+id/article_list_destination"
+        android:id="@+id/article_grid_destination"
         android:name="com.ang.acb.materialme.ui.grid.ArticleGridFragment"
-        android:label="fragment_article_list"
+        android:label="fragment_article_grid"
         tools:layout="@layout/fragment_article_grid">
         <action
-            android:id="@+id/action_article_list_to_articles_view_pager"
+            android:id="@+id/action_article_grid_to_articles_view_pager"
             app:destination="@id/articles_pager_destination" />
-        <argument
-            android:name="position"
-            app:argType="integer"
-            android:defaultValue="0" />
     </fragment>
 
     <fragment

@@ -2,7 +2,6 @@ package com.ang.acb.materialme.ui.grid;
 
 import android.graphics.Bitmap;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -15,6 +14,7 @@ import com.ang.acb.materialme.R;
 import com.ang.acb.materialme.data.model.Article;
 import com.ang.acb.materialme.databinding.ArticleItemBinding;
 import com.ang.acb.materialme.utils.Utils;
+
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
@@ -22,9 +22,10 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
+
 import com.google.android.material.card.MaterialCardView;
 
-class ArticleViewHolder extends RecyclerView.ViewHolder  {
+class ArticleViewHolder extends RecyclerView.ViewHolder {
 
     private ArticleItemBinding binding;
     private ViewHolderListener listener;
@@ -37,7 +38,7 @@ class ArticleViewHolder extends RecyclerView.ViewHolder  {
         this.listener = listener;
     }
 
-    public static ArticleViewHolder create(ViewGroup parent, ViewHolderListener listener) {
+    static ArticleViewHolder createViewHolder(ViewGroup parent, ViewHolderListener listener) {
         // Inflate view and obtain an instance of the binding class.
         ArticleItemBinding binding = ArticleItemBinding.inflate(
                 LayoutInflater.from(parent.getContext()),
@@ -52,15 +53,17 @@ class ArticleViewHolder extends RecyclerView.ViewHolder  {
         binding.setArticle(article);
         bindArticleThumbnail(article);
 
-        // TODO Set the string value of the article ID as the unique transition name for the view.
-        ViewCompat.setTransitionName(binding.articleItemThumbnail, String.valueOf(article.getId()));
+        // TODO Set the string value of the article ID as the unique transition name
+        //  for the view that will be used in shared element transition.
+        ViewCompat.setTransitionName(
+                binding.articleItemThumbnail,
+                String.valueOf(article.getId()));
 
         // Handle article items click events.
-        binding.getRoot().setOnClickListener(view ->
-                listener.onItemClicked(
-                        binding.articleItemThumbnail,    // shared element transition view
-                        String.valueOf(article.getId()), // shared element transition name
-                        getAdapterPosition()));
+        binding.getRoot().setOnClickListener(view -> {
+                // Let the listener start the ArticlePagerFragment.
+                listener.onItemClicked(view, getAdapterPosition());
+        });
 
         // Binding must be executed immediately.
         binding.executePendingBindings();
@@ -68,6 +71,7 @@ class ArticleViewHolder extends RecyclerView.ViewHolder  {
 
     private void bindArticleThumbnail(Article article) {
         binding.articleItemThumbnail.setAspectRatio(article.getAspectRatio());
+
         Glide.with(binding.getRoot().getContext())
                 .asBitmap()
                 .load(article.getThumbUrl())
@@ -79,7 +83,7 @@ class ArticleViewHolder extends RecyclerView.ViewHolder  {
                     @Override
                     public boolean onLoadFailed(@Nullable GlideException e, Object model,
                                                 Target<Bitmap> target, boolean isFirstResource) {
-                        listener.onLoadCompleted(binding.articleItemThumbnail, getAdapterPosition());
+                        listener.onLoadCompleted(getAdapterPosition());
                         return false;
                     }
 
@@ -87,7 +91,7 @@ class ArticleViewHolder extends RecyclerView.ViewHolder  {
                     public boolean onResourceReady(Bitmap resource, Object model, Target<Bitmap> target,
                                                    DataSource dataSource, boolean isFirstResource) {
                         generatePalette(resource);
-                        listener.onLoadCompleted(binding.articleItemThumbnail, getAdapterPosition());
+                        listener.onLoadCompleted(getAdapterPosition());
                         return false;
                     }
                 })

@@ -1,14 +1,11 @@
 package com.ang.acb.materialme.ui.grid;
 
-import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
-
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.ang.acb.materialme.data.model.Article;
-import com.ang.acb.materialme.databinding.ArticleItemBinding;
 
 import java.util.List;
 
@@ -24,12 +21,12 @@ public class ArticlesAdapter extends RecyclerView.Adapter<ArticleViewHolder>{
     @NonNull
     @Override
     public ArticleViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return ArticleViewHolder.create(parent, listener);
+        return ArticleViewHolder.createViewHolder(parent, listener);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ArticleViewHolder holder, int position) {
-        // Bind article data
+        // Bind article data.
         holder.bindTo(articleList.get(position));
     }
 
@@ -40,6 +37,7 @@ public class ArticlesAdapter extends RecyclerView.Adapter<ArticleViewHolder>{
 
     public void submitList(List<Article> articleList) {
         this.articleList = articleList;
+        // Notify any registered observers that the data set has changed.
         notifyDataSetChanged();
     }
 }

@@ -3,7 +3,12 @@ package com.ang.acb.materialme.ui.grid;
 
 import android.content.Context;
 import android.os.Bundle;
-;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
+import android.widget.ImageView;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.SharedElementCallback;
@@ -15,13 +20,9 @@ import androidx.navigation.fragment.FragmentNavigator;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
-
-import android.transition.TransitionInflater;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
-import android.widget.ImageView;
+import androidx.transition.Transition;
+import androidx.transition.TransitionInflater;
+import androidx.transition.TransitionSet;
 
 import com.ang.acb.materialme.R;
 import com.ang.acb.materialme.data.model.Article;
@@ -29,6 +30,7 @@ import com.ang.acb.materialme.data.model.Resource;
 import com.ang.acb.materialme.databinding.FragmentArticleGridBinding;
 import com.ang.acb.materialme.ui.viewmodel.ArticlesViewModel;
 import com.ang.acb.materialme.ui.common.MainActivity;
+import com.ang.acb.materialme.ui.details.ArticlesPagerFragment;
 import com.ang.acb.materialme.utils.GridMarginDecoration;
 
 import org.jetbrains.annotations.NotNull;
@@ -80,21 +82,20 @@ public class ArticleGridFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment.
         binding = FragmentArticleGridBinding.inflate(inflater, container, false);
-
-        setupToolbar();
-        setupRecyclerView();
-        initViewModel();
-        prepareTransitions();
-        setupViewHolderListener();
-        setupAdapter();
-        populateUi();
-
         return binding.getRoot();
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        setupToolbar();
+        initViewModel();
+        setupRecyclerView();
+        prepareTransitions();
+        initViewHolderListener();
+        setupAdapter();
+        populateUi();
         scrollToPosition();
     }
 
@@ -125,65 +126,80 @@ public class ArticleGridFragment extends Fragment {
     }
 
     /**
-     * Prepares the shared element transition to the pager fragment,
-     * as well as the other transitions that affect the flow.
+     * Prepares the shared element transition to and back to the {@link ArticlesPagerFragment}.
      */
     private void prepareTransitions() {
         isEnterTransitionStarted = new AtomicBoolean();
-        setExitTransition(TransitionInflater.from(getContext())
-                .inflateTransition(R.transition.grid_exit_transition));
+        // To make our transitions even smoother, we would like to fade out
+        // the grid items when the image transitions to the pager view.
+        Transition gridExitTransition = TransitionInflater.from(getContext())
+                .inflateTransition(R.transition.grid_exit_transition) ;
+        gridExitTransition.setDuration(325);
+        setExitTransition(gridExitTransition);
 
-        // Note: a similar mapping is set in ArticlesPagerFragment
-        // with a setEnterSharedElementCallback().
+        // We would like to support a seamless back and forth transition. This includes
+        // a transition from the grid to the pager, and then a transition back to the
+        // relevant image, even when the user paged to a different image. To do so, we
+        // will need to find a way to dynamically remap the shared elements. To do this,
+        // first, we'll set a transition name on the image views by calling setTransitionName.
+        // Then  we'll set up SharedElementCallbacks to intercept onMapSharedElements() and
+        // adjust the mapping of the shared element names to views. This will be done when
+        // exiting the ArticleGridFragment and when entering the ArticlesPagerFragment.
         setExitSharedElementCallback(new SharedElementCallback() {
             @Override
             public void onMapSharedElements(List<String> names, Map<String, View> sharedElements) {
                 // Locate the ViewHolder for the clicked position.
                 RecyclerView.ViewHolder selectedViewHolder = binding.articlesRecyclerView
                         .findViewHolderForAdapterPosition(viewModel.getCurrentPosition());
-                if (selectedViewHolder == null || selectedViewHolder.itemView == null) {
-                    return;
-                }
+                if (selectedViewHolder == null || selectedViewHolder.itemView == null) return;
 
-                // Map the first shared element name to the child ImageView.
-                ImageView childImageView = selectedViewHolder.itemView
+                // We are only interested in a single ImageView transition from the grid to the
+                // fragment the view-pager holds, so the mapping only needs to be adjusted for
+                // the first named element received at the onMapSharedElements() callback.
+                ImageView transitioningView = selectedViewHolder.itemView
                         .findViewById(R.id.article_item_thumbnail);
-                sharedElements.put(names.get(0),childImageView);
+                sharedElements.put(names.get(0),transitioningView);
             }
         });
     }
 
-    private void setupViewHolderListener() {
+    private void initViewHolderListener() {
         listener = new ViewHolderListener() {
             @Override
-            public void onItemClicked(View sharedView, String sharedElementName, int position) {
+            public void onItemClicked(View view, int position) {
                 // Save current position to view model.
                 viewModel.setCurrentPosition(position);
 
+                // Exclude the clicked card from the exit transition (e.g. the card will
+                // disappear immediately instead of fading out with the rest to prevent
+                // an overlapping animation of fade and move).
+                ((TransitionSet) getExitTransition()).excludeTarget(view, true);
+
                 // Create the shared element transition extras.
+                ImageView transitioningView = view.findViewById(R.id.article_item_thumbnail);
                 FragmentNavigator.Extras extras = new FragmentNavigator.Extras.Builder()
-                        .addSharedElement(sharedView, sharedElementName)
+                        .addSharedElement(transitioningView, transitioningView.getTransitionName())
                         .build();
 
-                // Navigate to destination (ArticlesPagerFragment), passing in the
-                // current position as arg and the shared elements as extras.
+                // Navigate to destination (ArticlesPagerFragment),
+                // passing in the shared element as extras.
                 NavHostFragment.findNavController(ArticleGridFragment.this)
-                        .navigate(R.id.action_article_list_to_articles_view_pager,
+                        .navigate(R.id.action_article_grid_to_articles_view_pager,
                                 null, null, extras);
             }
 
             @Override
-            public void onLoadCompleted(ImageView view, int position) {
+            public void onLoadCompleted(int position) {
                 // Call startPostponedEnterTransition() only when the
                 // selected image loading is completed.
                 if (viewModel.getCurrentPosition() != position) return;
                 if (isEnterTransitionStarted.getAndSet(true)) return;
-                scheduleStartPostponedTransition();
+                schedulePostponedEnterTransition();
             }
         };
     }
 
-    private void scheduleStartPostponedTransition() {
+    private void schedulePostponedEnterTransition() {
         // Before calling startPostponedEnterTransition(), make sure that
         // the view is drawn first using ViewTreeObserver's OnPreDrawListener.
         // https://medium.com/@ayushkhare/shared-element-transitions-4a645a30c848
@@ -220,14 +236,13 @@ public class ArticleGridFragment extends Fragment {
                             adapter.submitList(resource.data);
                         }
                     }
-                });
+                }
+        );
     }
 
     /**
      * Scrolls the recycler view to show the last viewed item in the grid.
      * This is important when navigating back from the grid.
-     *
-     * See: https://github.com/android/animation-samples/tree/master/GridToPager
      */
     private void scrollToPosition() {
         binding.articlesRecyclerView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
@@ -244,10 +259,9 @@ public class ArticleGridFragment extends Fragment {
                 if (viewAtPosition == null || layoutManager.isViewPartiallyVisible(
                         viewAtPosition, false, true)) {
                     binding.articlesRecyclerView.post(() ->
-                            layoutManager.scrollToPosition(viewModel.getCurrentPosition()));
+                        layoutManager.scrollToPosition(viewModel.getCurrentPosition()));
                 }
             }
         });
     }
-
 }

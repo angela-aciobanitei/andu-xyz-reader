@@ -4,6 +4,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.text.Html;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -15,13 +20,6 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.palette.graphics.Palette;
-
-import android.text.Html;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
-import android.widget.ImageView;
 
 import com.ang.acb.materialme.R;
 import com.ang.acb.materialme.data.model.Article;
@@ -48,7 +46,7 @@ import timber.log.Timber;
 public class ArticleDetailsFragment extends Fragment {
 
     private static final String ARG_POSITION = "ARG_POSITION";
-    public static final String ARG_ARTICLE_ID = "ARG_ARTICLE_ID";
+    private static final String ARG_ARTICLE_ID = "ARG_ARTICLE_ID";
 
     private FragmentArticleDetailsBinding binding;
     private ArticlesViewModel viewModel;
@@ -56,7 +54,7 @@ public class ArticleDetailsFragment extends Fragment {
     private long articleId;
 
     @Inject
-    public ViewModelProvider.Factory viewModelFactory;
+    ViewModelProvider.Factory viewModelFactory;
 
     // Required empty public constructor
     public ArticleDetailsFragment() {}
@@ -92,7 +90,7 @@ public class ArticleDetailsFragment extends Fragment {
     @Override
     public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+        // Inflate the layout for this fragment.
         binding = FragmentArticleDetailsBinding.inflate(inflater, container, false);
 
         // TODO Set the string value of the article id as the unique transition name for the view.
@@ -191,7 +189,7 @@ public class ArticleDetailsFragment extends Fragment {
                         @Override
                         public boolean onLoadFailed(@Nullable GlideException e, Object
                                 model, Target<Bitmap> target, boolean isFirstResource) {
-                            scheduleStartPostponedTransition();
+                            schedulePostponedEnterTransition();
                             return false;
                         }
 
@@ -199,7 +197,7 @@ public class ArticleDetailsFragment extends Fragment {
                         public boolean onResourceReady(Bitmap resource, Object model, Target<Bitmap> target,
                                                        DataSource dataSource, boolean isFirstResource) {
                             generatePalette(resource);
-                            scheduleStartPostponedTransition();
+                            schedulePostponedEnterTransition();
                             return false;
                         }
                     })
@@ -207,6 +205,21 @@ public class ArticleDetailsFragment extends Fragment {
 
             binding.executePendingBindings();
         }
+    }
+
+    private void schedulePostponedEnterTransition() {
+        // Before calling startPostponedEnterTransition(), make sure that
+        // the view is drawn first using ViewTreeObserver's OnPreDrawListener.
+        // https://medium.com/@ayushkhare/shared-element-transitions-4a645a30c848.
+        binding.getRoot().getViewTreeObserver().addOnPreDrawListener(
+                new ViewTreeObserver.OnPreDrawListener() {
+                    @Override
+                    public boolean onPreDraw() {
+                        binding.getRoot().getViewTreeObserver().removeOnPreDrawListener(this);
+                        getParentFragment().startPostponedEnterTransition();
+                        return true;
+                    }
+                });
     }
 
     private void generatePalette(Bitmap resource) {
@@ -220,26 +233,5 @@ public class ArticleDetailsFragment extends Fragment {
                 }
             }
         });
-    }
-
-    /**
-     * Helper method that calls startPostponedEnterTransition().
-     * Note: postponeEnterTransition() is called on the parent, ArticlesPagerFragment, so
-     * startPostponedEnterTransition() should also be called on it to get the transition
-     * going. But before calling startPostponedEnterTransition(), we first need to make
-     * sure that the image view is drawn.
-     * See: https://medium.com/@ayushkhare/shared-element-transitions-4a645a30c848
-     */
-    private void scheduleStartPostponedTransition() {
-        // To make sure our shared view is drawn, we use the ViewTreeObserver class.
-        binding.getRoot().getViewTreeObserver().addOnPreDrawListener(
-                new ViewTreeObserver.OnPreDrawListener() {
-                    @Override
-                    public boolean onPreDraw() {
-                        binding.getRoot().getViewTreeObserver().removeOnPreDrawListener(this);
-                        getParentFragment().startPostponedEnterTransition();
-                        return true;
-                    }
-                });
     }
 }
