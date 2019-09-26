@@ -13,9 +13,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.ang.acb.materialme.R;
 import com.ang.acb.materialme.data.model.Article;
 import com.ang.acb.materialme.databinding.ArticleItemBinding;
+import com.ang.acb.materialme.utils.GlideApp;
 import com.ang.acb.materialme.utils.Utils;
 
-import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
@@ -25,20 +25,22 @@ import com.bumptech.glide.request.target.Target;
 
 import com.google.android.material.card.MaterialCardView;
 
+import timber.log.Timber;
+
 class ArticleViewHolder extends RecyclerView.ViewHolder {
 
     private ArticleItemBinding binding;
-    private ViewHolderListener listener;
+    private ArticleViewHolderListener listener;
 
     // Required constructor matching super
-    private ArticleViewHolder(@NonNull ArticleItemBinding binding, ViewHolderListener listener) {
+    private ArticleViewHolder(@NonNull ArticleItemBinding binding, ArticleViewHolderListener listener) {
         super(binding.getRoot());
 
         this.binding = binding;
         this.listener = listener;
     }
 
-    static ArticleViewHolder createViewHolder(ViewGroup parent, ViewHolderListener listener) {
+    static ArticleViewHolder createViewHolder(ViewGroup parent, ArticleViewHolderListener listener) {
         // Inflate view and obtain an instance of the binding class.
         ArticleItemBinding binding = ArticleItemBinding.inflate(
                 LayoutInflater.from(parent.getContext()),
@@ -49,20 +51,22 @@ class ArticleViewHolder extends RecyclerView.ViewHolder {
 
 
     void bindTo(Article article) {
-        // Bind article data.
+        // Bind article data (title, author and thumbnail)
         binding.setArticle(article);
         bindArticleThumbnail(article);
 
         // TODO Set the string value of the article ID as the unique transition name
-        //  for the view that will be used in shared element transition.
+        // for the image view that will be used in shared element transition.
         ViewCompat.setTransitionName(
                 binding.articleItemThumbnail,
                 String.valueOf(article.getId()));
 
         // Handle article items click events.
         binding.getRoot().setOnClickListener(view -> {
-                // Let the listener start the ArticlePagerFragment.
-                listener.onItemClicked(view, getAdapterPosition());
+                listener.onItemClicked(
+                        binding.articleItemThumbnail,
+                        String.valueOf(article.getId()),
+                        getAdapterPosition());
         });
 
         // Binding must be executed immediately.
@@ -70,39 +74,51 @@ class ArticleViewHolder extends RecyclerView.ViewHolder {
     }
 
     private void bindArticleThumbnail(Article article) {
+        // Set the aspect ratio for this image.
         binding.articleItemThumbnail.setAspectRatio(article.getAspectRatio());
 
-        Glide.with(binding.getRoot().getContext())
+        // Load the image with Glide to prevent OOM error when the image drawables are very large.
+        final int adapterPosition = getAdapterPosition();
+        GlideApp.with(binding.getRoot().getContext())
                 .asBitmap()
                 .load(article.getThumbUrl())
+                // Tell Glide not to use its standard crossfade animation.
                 .dontAnimate()
+                // Display a placeholder until the image is loaded and processed.
                 .placeholder(R.color.photoPlaceholder)
+                // Transform bitmap to obtain rounded corners.
                 .apply(RequestOptions.bitmapTransform(new RoundedCorners((int)
                         Utils.dipToPixels(binding.getRoot().getContext(), 6))))
+                // Keep track of errors and successful image loading.
                 .listener(new RequestListener<Bitmap>() {
                     @Override
-                    public boolean onLoadFailed(@Nullable GlideException e, Object model,
+                    public boolean onLoadFailed(@Nullable GlideException exception, Object model,
                                                 Target<Bitmap> target, boolean isFirstResource) {
-                        listener.onLoadCompleted(getAdapterPosition());
+                        listener.onLoadCompleted(adapterPosition);
+                        Timber.d("Image loading failed: %s", exception.getMessage());
                         return false;
                     }
 
                     @Override
                     public boolean onResourceReady(Bitmap resource, Object model, Target<Bitmap> target,
                                                    DataSource dataSource, boolean isFirstResource) {
-                        generatePalette(resource);
-                        listener.onLoadCompleted(getAdapterPosition());
+                        generatePaletteAsynchronously(resource);
+                        listener.onLoadCompleted(adapterPosition);
                         return false;
                     }
                 })
                 .into(binding.articleItemThumbnail);
     }
 
-    private void generatePalette(Bitmap resource) {
-        // Generate palette synchronously
-        Palette.from(resource).generate(new Palette.PaletteAsyncListener() {
-            public void onGenerated(Palette p) {
-                Palette.Swatch swatch = Utils.getDominantColor(p);
+    private void generatePaletteAsynchronously(Bitmap bitmap) {
+        // By passing in a PaletteAsyncListener to the generate() method, we can generate
+        // the palette asynchronously using an AsyncTask to gather the Palette swatch
+        // information from the bitmap. When a palette is generated, a number of colors
+        // with different profiles are extracted from the image: vibrant, vibrant dark,
+        // vibrant light, muted, muted dark, muted light.
+        Palette.from(bitmap).generate(new Palette.PaletteAsyncListener() {
+            public void onGenerated(Palette palette) {
+                Palette.Swatch swatch = Utils.getDominantColor(palette);
                 if (swatch != null) {
                     MaterialCardView cardView = (MaterialCardView) binding.getRoot();
                     cardView.setCardBackgroundColor(swatch.getRgb());

@@ -39,7 +39,7 @@ import static androidx.fragment.app.FragmentStatePagerAdapter.BEHAVIOR_RESUME_ON
 
 
 /**
- * A fragment for displaying a pager of articles.
+ * A fragment for displaying a view pager of articles.
  *
  * See: https://github.com/android/animation-samples/tree/master/GridToPager
  * See: https://android-developers.googleblog.com/2018/02/continuous-shared-element-transitions.html
@@ -72,12 +72,7 @@ public class ArticlesPagerFragment extends Fragment {
 
         // Avoid a postponeEnterTransition() on orientation change,
         // and postpone only of first creation.
-        //if (savedInstanceState == null) postponeEnterTransition();
-        Transition enterTransition = TransitionInflater.from(getContext())
-                .inflateTransition(R.transition.image_shared_element_transition);
-        enterTransition.setDuration(375);
-        setSharedElementEnterTransition(enterTransition);
-
+        if (savedInstanceState == null) postponeEnterTransition();
     }
 
     @Override
@@ -97,7 +92,7 @@ public class ArticlesPagerFragment extends Fragment {
         updateCurrentPagePosition();
         populateUi();
 
-        //prepareTransitions();
+        prepareTransitions();
     }
 
     private void initViewModel() {
@@ -106,10 +101,10 @@ public class ArticlesPagerFragment extends Fragment {
     }
 
     private void setupViewPagerAdapter(){
-        // Initialize ViewPagerAdapter with the child fragment manager.
+        // Because ArticlesPagerFragment contains a series of article details fragments
+        // we need to initialize the view pager adapter with the child fragment manager.
         viewPagerAdapter = new ViewPagerAdapter(
-                getChildFragmentManager(),
-                BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
+                getChildFragmentManager());
         binding.articlesViewPager.setAdapter(viewPagerAdapter);
     }
 
@@ -132,24 +127,30 @@ public class ArticlesPagerFragment extends Fragment {
                     @Override
                     public void onChanged(Resource<List<Article>> resource) {
                         if (resource != null && resource.data != null) {
-                            // Set the current item for the view pager.
-                            binding.articlesViewPager.setCurrentItem(
-                                    viewModel.getCurrentPosition());
                             // Update data in the view pager adapter.
                             viewPagerAdapter.submitList(resource.data);
+
+                            // Set the currently selected page for the view pager.
+                            // To transition immediately, set smoothScroll to false.
+                            binding.articlesViewPager.setCurrentItem(
+                                    viewModel.getCurrentPosition(), false);
                         }
                     }
-        });
+                }
+        );
     }
 
     /**
      * Prepares the shared element transition from and back to the {@link ArticleGridFragment}.
      */
     private void prepareTransitions() {
-        Transition enterTransition = TransitionInflater.from(getContext())
-                .inflateTransition(R.transition.image_shared_element_transition);
-        enterTransition.setDuration(375);
-        setSharedElementEnterTransition(enterTransition);
+        //Transition enterTransition = TransitionInflater.from(getContext())
+        //        .inflateTransition(R.transition.image_shared_element_transition);
+        //enterTransition.setDuration(375);
+        //setSharedElementEnterTransition(enterTransition);
+
+        setSharedElementEnterTransition(TransitionInflater.from(getContext())
+                .inflateTransition(android.R.transition.move));
 
         // We would like to support a seamless back and forth transition. This includes
         // a transition from the grid to the pager, and then a transition back to the

@@ -24,7 +24,7 @@ public class ArticlesViewModel extends ViewModel {
     private int currentPosition;
 
     @Inject
-    public ArticlesViewModel(ArticlesRepository repository) {
+    ArticlesViewModel(ArticlesRepository repository) {
         this.repository = repository;
     }
 

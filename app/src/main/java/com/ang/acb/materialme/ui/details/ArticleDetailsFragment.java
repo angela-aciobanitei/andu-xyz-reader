@@ -3,6 +3,7 @@ package com.ang.acb.materialme.ui.details;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.Html;
 import android.view.LayoutInflater;
@@ -33,6 +34,7 @@ import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
+import com.google.android.material.appbar.AppBarLayout;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -45,8 +47,8 @@ import timber.log.Timber;
 
 public class ArticleDetailsFragment extends Fragment {
 
-    private static final String ARG_POSITION = "ARG_POSITION";
     private static final String ARG_ARTICLE_ID = "ARG_ARTICLE_ID";
+    public static final String ARG_POSITION = "ARG_POSITION";
 
     private FragmentArticleDetailsBinding binding;
     private ArticlesViewModel viewModel;
@@ -81,6 +83,7 @@ public class ArticleDetailsFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         if (getArguments() != null) {
             position = getArguments().getInt(ARG_POSITION);
             articleId = getArguments().getLong(ARG_ARTICLE_ID);
@@ -127,6 +130,37 @@ public class ArticleDetailsFragment extends Fragment {
         }
     }
 
+    private void setToolbarTitleIfCollapsed(Article article) {
+        // To set the toolbar title only when the toolbar is collapsed, we need to add an
+        // OnOffsetChangedListener on AppBarLayout to determine when CollapsingToolbarLayout
+        // is collapsed or expanded. This listener is triggered when vertical offset is changed,
+        // i.e bottom and top are offset.
+        // See: https://medium.com/@nullthemall/the-power-of-appbarlayout-offset-ecbf8eaa6b5f
+        binding.detailsAppBar.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
+            boolean isShown = true;
+            int totalScrollRange = -1;
+
+            @Override
+            public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
+                // The verticalOffset parameter is always between 0 and
+                // appBarLayout.getTotalScrollRange(), which is the total
+                // height of all the children that can scroll.
+                if (totalScrollRange == -1) {
+                    totalScrollRange = appBarLayout.getTotalScrollRange();
+                }
+                // If toolbar is completely collapsed, set the collapsing bar title.
+                if (totalScrollRange + verticalOffset == 0) {
+                    binding.detailsCollapsingToolbar.setTitle(article.getTitle());
+                    isShown = true;
+                } else if (isShown) {
+                    // When toolbar is expanded, display an empty string.
+                    binding.detailsCollapsingToolbar.setTitle(" ");
+                    isShown = false;
+                }
+            }
+        });
+    }
+
     private void setupShareFab() {
         binding.contentPartialDetails.shareFab.setOnClickListener(view ->
                 startActivity(Intent.createChooser(
@@ -139,7 +173,7 @@ public class ArticleDetailsFragment extends Fragment {
     private void initViewModel() {
         viewModel = ViewModelProviders.of(this, viewModelFactory)
                 .get(ArticlesViewModel.class);
-        Timber.d("Setup articles view model.");
+        viewModel.setCurrentPosition(position);
     }
 
     private void observeArticleDetails() {
@@ -156,8 +190,8 @@ public class ArticleDetailsFragment extends Fragment {
 
     private void populateUi(Resource<List<Article>> resource){
         if (resource != null && resource.data != null) {
-            Article article = resource.data.get(position);
-            binding.setArticle(article);
+            Article article = resource.data.get(viewModel.getCurrentPosition());
+            //if (getHostActivity().getSupportActionBar() != null) setToolbarTitleIfCollapsed(article);
 
             binding.contentPartialDetails.articleTitle.setText(article.getTitle());
             binding.contentPartialDetails.articleByline.setText(Utils.formatArticleByline(
@@ -165,7 +199,7 @@ public class ArticleDetailsFragment extends Fragment {
                     article.getAuthor()));
 
             binding.contentPartialDetails.articleBody.setText(Html.fromHtml(article.getBody()
-                    .substring(0, 2500)
+                    .substring(0, 1000)
                     .replaceAll("\r\n\r\n", "<br /><br />")
                     .replaceAll("\r\n", " ")
                     .replaceAll(" {2}", "")));
@@ -182,9 +216,11 @@ public class ArticleDetailsFragment extends Fragment {
             GlideApp.with(this)
                     .asBitmap()
                     .load(article.getPhotoUrl())
+                    // Tell Glide not to use its standard crossfade animation.
                     .dontAnimate()
+                    // Display a placeholder until the image is loaded and processed.
                     .placeholder(R.color.photoPlaceholder)
-                    // This listener tells when the image is done loading
+                    // Keep track of errors and successful image loading.
                     .listener(new RequestListener<Bitmap>() {
                         @Override
                         public boolean onLoadFailed(@Nullable GlideException e, Object
@@ -196,35 +232,43 @@ public class ArticleDetailsFragment extends Fragment {
                         @Override
                         public boolean onResourceReady(Bitmap resource, Object model, Target<Bitmap> target,
                                                        DataSource dataSource, boolean isFirstResource) {
-                            generatePalette(resource);
+                            generatePaletteAsynchronously(resource);
                             schedulePostponedEnterTransition();
                             return false;
                         }
                     })
                     .into(binding.detailsArticlePhoto);
 
+            // Binding needs to be executed immediately.
             binding.executePendingBindings();
         }
     }
 
     private void schedulePostponedEnterTransition() {
-        // Before calling startPostponedEnterTransition(), make sure that
-        // the view is drawn first using ViewTreeObserver's OnPreDrawListener.
+        // Before calling startPostponedEnterTransition(), make sure that the
+        // view is drawn first using ViewTreeObserver's OnPreDrawListener.
         // https://medium.com/@ayushkhare/shared-element-transitions-4a645a30c848.
         binding.getRoot().getViewTreeObserver().addOnPreDrawListener(
                 new ViewTreeObserver.OnPreDrawListener() {
                     @Override
                     public boolean onPreDraw() {
                         binding.getRoot().getViewTreeObserver().removeOnPreDrawListener(this);
+                        // The postponeEnterTransition() is called on the parent, the
+                        // ArticlesPagerFragment, so the startPostponedEnterTransition()
+                        // should also be called on the parent to get the transition going.
                         getParentFragment().startPostponedEnterTransition();
                         return true;
                     }
                 });
     }
 
-    private void generatePalette(Bitmap resource) {
-        // Generate palette synchronously.
-        Palette.from(resource).generate(new Palette.PaletteAsyncListener() {
+    private void generatePaletteAsynchronously(Bitmap bitmap) {
+        // By passing in a PaletteAsyncListener to the generate() method, we can generate
+        // the palette asynchronously using an AsyncTask to gather the Palette swatch
+        // information from the bitmap. When a palette is generated, a number of colors
+        // with different profiles are extracted from the image: vibrant, vibrant dark,
+        // vibrant light, muted, muted dark, muted light.
+        Palette.from(bitmap).generate(new Palette.PaletteAsyncListener() {
             public void onGenerated(Palette palette) {
                 Palette.Swatch swatch = Utils.getDominantColor(palette);
                 if (swatch != null) {

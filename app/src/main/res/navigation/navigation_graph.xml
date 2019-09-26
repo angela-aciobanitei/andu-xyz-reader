@@ -1,29 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Navigation occurs between your app's destinations — anywhere in your app to which
-users can navigate. These destinations are connected via actions. A navigation graph is
-a resource file that contains all of your destinations and actions. The graph represents
-all of your app's navigation paths. See:
-https://developer.android.com/guide/navigation/navigation-getting-started#create-nav-graph -->
 <navigation
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/navigation_graph"
-    app:startDestination="@id/article_grid_destination">
+    app:startDestination="@id/articles_grid_dest">
 
     <fragment
-        android:id="@+id/article_grid_destination"
+        android:id="@+id/articles_grid_dest"
         android:name="com.ang.acb.materialme.ui.grid.ArticleGridFragment"
         android:label="fragment_article_grid"
         tools:layout="@layout/fragment_article_grid">
         <action
-            android:id="@+id/action_article_grid_to_articles_view_pager"
-            app:destination="@id/articles_pager_destination" />
+            android:id="@+id/action_from_articles_grid_to_articles_pager"
+            app:destination="@id/articles_pager_dest" />
+        <argument
+            android:name="position"
+            app:argType="integer"
+            android:defaultValue="0" />
     </fragment>
 
     <fragment
-        android:id="@+id/articles_pager_destination"
+        android:id="@+id/articles_pager_dest"
         android:name="com.ang.acb.materialme.ui.details.ArticlesPagerFragment"
-        android:label="fragment_articles_view_pager"
+        android:label="fragment_articles_pager"
         tools:layout="@layout/fragment_articles_view_pager" />
 </navigation>

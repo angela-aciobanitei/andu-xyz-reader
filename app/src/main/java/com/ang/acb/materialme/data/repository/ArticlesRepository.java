@@ -23,9 +23,9 @@ public class ArticlesRepository {
     private final ApiService apiService;
 
     @Inject
-    public ArticlesRepository(AppExecutors executors,
-                              AppDatabase database,
-                              ApiService apiService) {
+    ArticlesRepository(AppExecutors executors,
+                       AppDatabase database,
+                       ApiService apiService) {
         this.executors = executors;
         this.database = database;
         this.apiService = apiService;

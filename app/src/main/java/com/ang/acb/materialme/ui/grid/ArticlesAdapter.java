@@ -12,9 +12,9 @@ import java.util.List;
 public class ArticlesAdapter extends RecyclerView.Adapter<ArticleViewHolder>{
 
     private List<Article> articleList;
-    private ViewHolderListener listener;
+    private ArticleViewHolderListener listener;
 
-    public ArticlesAdapter(ViewHolderListener listener) {
+    public ArticlesAdapter(ArticleViewHolderListener listener) {
         this.listener = listener;
     }
 

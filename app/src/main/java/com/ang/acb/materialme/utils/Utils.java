@@ -14,28 +14,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-import timber.log.Timber;
-
 public class Utils {
 
     private static SimpleDateFormat dateFormat = new SimpleDateFormat();
-
     private static GregorianCalendar START_OF_EPOCH = new GregorianCalendar(2, 1, 1);
-
-    public static Palette.Swatch getDominantColor(Palette palette) {
-        Palette.Swatch result = palette.getDominantSwatch();
-        if (palette.getVibrantSwatch() != null) {
-            result = palette.getVibrantSwatch();
-        } else if (palette.getMutedSwatch() != null) {
-            result = palette.getMutedSwatch();
-        }
-        return result;
-    }
-
-    public static float dipToPixels(Context context, float dipValue) {
-        DisplayMetrics metrics = context.getResources().getDisplayMetrics();
-        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dipValue, metrics);
-    }
 
     public static Date formatPublishedDate(String publishedDate) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.sss");
@@ -57,8 +39,23 @@ public class Utils {
         } else {
             // If date is before 1902, just show the string.
             byline = Html.fromHtml(dateFormat.format(publishedDate) +
-                            " by <font color='#ffffff'>" + author + "</font>");
+                    " by <font color='#ffffff'>" + author + "</font>");
         }
         return byline;
+    }
+
+    public static float dipToPixels(Context context, float dipValue) {
+        DisplayMetrics metrics = context.getResources().getDisplayMetrics();
+        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dipValue, metrics);
+    }
+
+    public static Palette.Swatch getDominantColor(Palette palette) {
+        Palette.Swatch result = palette.getDominantSwatch();
+        if (palette.getVibrantSwatch() != null) {
+            result = palette.getVibrantSwatch();
+        } else if (palette.getMutedSwatch() != null) {
+            result = palette.getMutedSwatch();
+        }
+        return result;
     }
 }
