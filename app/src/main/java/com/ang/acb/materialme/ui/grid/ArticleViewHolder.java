@@ -63,10 +63,7 @@ class ArticleViewHolder extends RecyclerView.ViewHolder {
 
         // Handle article items click events.
         binding.getRoot().setOnClickListener(view -> {
-                listener.onItemClicked(
-                        binding.articleItemThumbnail,
-                        String.valueOf(article.getId()),
-                        getAdapterPosition());
+                listener.onItemClicked(binding.getRoot(), getAdapterPosition());
         });
 
         // Binding must be executed immediately.
@@ -88,7 +85,8 @@ class ArticleViewHolder extends RecyclerView.ViewHolder {
                 .placeholder(R.color.photoPlaceholder)
                 // Transform bitmap to obtain rounded corners.
                 .apply(RequestOptions.bitmapTransform(new RoundedCorners((int)
-                        Utils.dipToPixels(binding.getRoot().getContext(), 6))))
+                        Utils.dipToPixels(binding.getRoot().getContext(),
+                        6))))
                 // Keep track of errors and successful image loading.
                 .listener(new RequestListener<Bitmap>() {
                     @Override
@@ -120,9 +118,8 @@ class ArticleViewHolder extends RecyclerView.ViewHolder {
             public void onGenerated(Palette palette) {
                 Palette.Swatch swatch = Utils.getDominantColor(palette);
                 if (swatch != null) {
-                    MaterialCardView cardView = (MaterialCardView) binding.getRoot();
-                    cardView.setCardBackgroundColor(swatch.getRgb());
-                    cardView.setStrokeColor(swatch.getRgb());
+                    binding.articleItemCardView.setCardBackgroundColor(swatch.getRgb());
+                    binding.articleItemCardView.setStrokeColor(swatch.getRgb());
                 }
             }
         });

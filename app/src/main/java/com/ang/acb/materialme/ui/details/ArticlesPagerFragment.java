@@ -1,7 +1,6 @@
 package com.ang.acb.materialme.ui.details;
 
 import android.content.Context;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -71,7 +70,7 @@ public class ArticlesPagerFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         // Avoid a postponeEnterTransition() on orientation change,
-        // and postpone only of first creation.
+        // and postpone only on first creation.
         if (savedInstanceState == null) postponeEnterTransition();
     }
 
@@ -91,7 +90,6 @@ public class ArticlesPagerFragment extends Fragment {
         setupViewPagerAdapter();
         updateCurrentPagePosition();
         populateUi();
-
         prepareTransitions();
     }
 
@@ -104,7 +102,8 @@ public class ArticlesPagerFragment extends Fragment {
         // Because ArticlesPagerFragment contains a series of article details fragments
         // we need to initialize the view pager adapter with the child fragment manager.
         viewPagerAdapter = new ViewPagerAdapter(
-                getChildFragmentManager());
+                getChildFragmentManager(),
+                BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
         binding.articlesViewPager.setAdapter(viewPagerAdapter);
     }
 
@@ -144,13 +143,10 @@ public class ArticlesPagerFragment extends Fragment {
      * Prepares the shared element transition from and back to the {@link ArticleGridFragment}.
      */
     private void prepareTransitions() {
-        //Transition enterTransition = TransitionInflater.from(getContext())
-        //        .inflateTransition(R.transition.image_shared_element_transition);
-        //enterTransition.setDuration(375);
-        //setSharedElementEnterTransition(enterTransition);
-
-        setSharedElementEnterTransition(TransitionInflater.from(getContext())
-                .inflateTransition(android.R.transition.move));
+        Transition enterTransition = TransitionInflater.from(getContext())
+                .inflateTransition(R.transition.image_view_enter_transition);
+        enterTransition.setDuration(375);
+        setSharedElementEnterTransition(enterTransition);
 
         // We would like to support a seamless back and forth transition. This includes
         // a transition from the grid to the pager, and then a transition back to the

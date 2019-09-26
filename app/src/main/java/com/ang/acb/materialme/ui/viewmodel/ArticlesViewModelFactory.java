@@ -12,7 +12,6 @@ import javax.inject.Provider;
 import javax.inject.Singleton;
 
 /**
- *
  * A factory class for creating ViewModels. Note: Dagger 2 allows multibindings and
  * with it the possibility to create a "map" of objects with a specific key:
  *      the key: for example the class type of ViewModel MyViewModel::class
@@ -31,7 +30,7 @@ public class ArticlesViewModelFactory implements ViewModelProvider.Factory {
     private final Map<Class<? extends ViewModel>, Provider<ViewModel>> creators;
 
     @Inject
-    public ArticlesViewModelFactory(Map<Class<? extends ViewModel>, Provider<ViewModel>> creators) {
+    ArticlesViewModelFactory(Map<Class<? extends ViewModel>, Provider<ViewModel>> creators) {
         this.creators = creators;
     }
 

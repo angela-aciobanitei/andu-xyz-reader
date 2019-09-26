@@ -11,7 +11,7 @@ import java.util.List;
 
 public class ArticlesAdapter extends RecyclerView.Adapter<ArticleViewHolder>{
 
-    private List<Article> articleList;
+    private List<Article> articles;
     private ArticleViewHolderListener listener;
 
     public ArticlesAdapter(ArticleViewHolderListener listener) {
@@ -26,18 +26,18 @@ public class ArticlesAdapter extends RecyclerView.Adapter<ArticleViewHolder>{
 
     @Override
     public void onBindViewHolder(@NonNull ArticleViewHolder holder, int position) {
-        // Bind article data.
-        holder.bindTo(articleList.get(position));
+        holder.bindTo(articles.get(position));
     }
 
     @Override
     public int getItemCount() {
-        return articleList == null ? 0 :  articleList.size();
+        return articles == null ? 0 :  articles.size();
     }
 
-    public void submitList(List<Article> articleList) {
-        this.articleList = articleList;
-        // Notify any registered observers that the data set has changed.
+    public void submitList(List<Article> articles) {
+        this.articles = articles;
+        // Notify any registered observers
+        // that the data set has changed.
         notifyDataSetChanged();
     }
 }

@@ -17,9 +17,8 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
 
     private List<Article> articles;
 
-    // TODO This is deprecated...
-    public ViewPagerAdapter(@NonNull FragmentManager fm) {
-        super(fm);
+    public ViewPagerAdapter(@NonNull FragmentManager fm, int behavior) {
+        super(fm, behavior);
     }
 
     @NotNull
@@ -31,11 +30,6 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
     @Override
     public int getCount() {
         return articles != null ? articles.size() : 0;
-    }
-
-    @Override
-    public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
-        super.destroyItem(container, position, object);
     }
 
     public void submitList(List<Article> articles) {

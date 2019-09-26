@@ -62,7 +62,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/detail_inner_horizontal_margin"
             android:layout_marginRight="@dimen/detail_inner_horizontal_margin"
-            android:layout_below="@+id/meta_bar"
+            android:layout_below="@+id/share_fab"
             android:textColorLink="@color/colorAccent"
             android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
             tools:text="@tools:sample/lorem/random" />

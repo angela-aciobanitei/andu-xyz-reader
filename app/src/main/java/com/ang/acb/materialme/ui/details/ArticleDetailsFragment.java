@@ -3,7 +3,6 @@ package com.ang.acb.materialme.ui.details;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.os.Build;
 import android.os.Bundle;
 import android.text.Html;
 import android.view.LayoutInflater;
@@ -118,15 +117,13 @@ public class ArticleDetailsFragment extends Fragment {
 
     private void setupToolbar() {
         getHostActivity().setSupportActionBar(binding.detailsToolbar);
-
         binding.detailsToolbar.setNavigationOnClickListener(view ->
                 // Attempts to navigate up in the navigation hierarchy.
                 NavHostFragment.findNavController(ArticleDetailsFragment.this)
                         .navigateUp());
+
         if (getHostActivity().getSupportActionBar() != null) {
-            // Handle Up navigation and hide title
             getHostActivity().getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getHostActivity().getSupportActionBar().setDisplayShowTitleEnabled(false);
         }
     }
 
@@ -134,8 +131,7 @@ public class ArticleDetailsFragment extends Fragment {
         // To set the toolbar title only when the toolbar is collapsed, we need to add an
         // OnOffsetChangedListener on AppBarLayout to determine when CollapsingToolbarLayout
         // is collapsed or expanded. This listener is triggered when vertical offset is changed,
-        // i.e bottom and top are offset.
-        // See: https://medium.com/@nullthemall/the-power-of-appbarlayout-offset-ecbf8eaa6b5f
+        // i.e bottom and top are offset.See: http://stackoverflow.com/a/32724422/906577
         binding.detailsAppBar.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
             boolean isShown = true;
             int totalScrollRange = -1;
@@ -178,20 +174,17 @@ public class ArticleDetailsFragment extends Fragment {
 
     private void observeArticleDetails() {
         viewModel.getObservableArticles().observe(
-                getViewLifecycleOwner(),
-                new Observer<Resource<List<Article>>>() {
-                    @Override
-                    public void onChanged(Resource<List<Article>> resource) {
-                        Timber.d("Observe article item.");
-                        populateUi(resource);
-                    }
-        });
+                getViewLifecycleOwner(), this::populateUi);
     }
 
     private void populateUi(Resource<List<Article>> resource){
         if (resource != null && resource.data != null) {
             Article article = resource.data.get(viewModel.getCurrentPosition());
-            //if (getHostActivity().getSupportActionBar() != null) setToolbarTitleIfCollapsed(article);
+
+            // Update toolbar title when toolbar is collapsed.
+            if (getHostActivity().getSupportActionBar() != null) {
+                setToolbarTitleIfCollapsed(article);
+            }
 
             binding.contentPartialDetails.articleTitle.setText(article.getTitle());
             binding.contentPartialDetails.articleByline.setText(Utils.formatArticleByline(
@@ -199,6 +192,7 @@ public class ArticleDetailsFragment extends Fragment {
                     article.getAuthor()));
 
             binding.contentPartialDetails.articleBody.setText(Html.fromHtml(article.getBody()
+                    // Careful: this can trigger an IndexOutOfBoundsException.
                     .substring(0, 1000)
                     .replaceAll("\r\n\r\n", "<br /><br />")
                     .replaceAll("\r\n", " ")
@@ -210,7 +204,6 @@ public class ArticleDetailsFragment extends Fragment {
                         .replaceAll("\r\n\r\n", "<br /><br />")
                         .replaceAll("\r\n", " ")
                         .replaceAll(" {2}", "")));
-
             });
 
             GlideApp.with(this)
@@ -253,7 +246,7 @@ public class ArticleDetailsFragment extends Fragment {
                     @Override
                     public boolean onPreDraw() {
                         binding.getRoot().getViewTreeObserver().removeOnPreDrawListener(this);
-                        // The postponeEnterTransition() is called on the parent, the
+                        // The postponeEnterTransition() is called on the parent, that is
                         // ArticlesPagerFragment, so the startPostponedEnterTransition()
                         // should also be called on the parent to get the transition going.
                         getParentFragment().startPostponedEnterTransition();
