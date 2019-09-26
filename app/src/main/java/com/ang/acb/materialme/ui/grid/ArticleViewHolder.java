@@ -23,8 +23,6 @@ import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
 
-import com.google.android.material.card.MaterialCardView;
-
 import timber.log.Timber;
 
 class ArticleViewHolder extends RecyclerView.ViewHolder {
@@ -56,7 +54,7 @@ class ArticleViewHolder extends RecyclerView.ViewHolder {
         bindArticleThumbnail(article);
 
         // TODO Set the string value of the article ID as the unique transition name
-        // for the image view that will be used in shared element transition.
+        // for the image view that will be used in the shared element transition.
         ViewCompat.setTransitionName(
                 binding.articleItemThumbnail,
                 String.valueOf(article.getId()));
@@ -77,6 +75,10 @@ class ArticleViewHolder extends RecyclerView.ViewHolder {
         // Load the image with Glide to prevent OOM error when the image drawables are very large.
         final int adapterPosition = getAdapterPosition();
         GlideApp.with(binding.getRoot().getContext())
+                // Calling Glide.with() returns a RequestBuilder.
+                // By default you get a Drawable RequestBuilder, but
+                // you can change the requested type using as... methods.
+                // For example, asBitmap() returns a Bitmap RequestBuilder.
                 .asBitmap()
                 .load(article.getThumbUrl())
                 // Tell Glide not to use its standard crossfade animation.
@@ -109,11 +111,10 @@ class ArticleViewHolder extends RecyclerView.ViewHolder {
     }
 
     private void generatePaletteAsynchronously(Bitmap bitmap) {
-        // By passing in a PaletteAsyncListener to the generate() method, we can generate
-        // the palette asynchronously using an AsyncTask to gather the Palette swatch
-        // information from the bitmap. When a palette is generated, a number of colors
-        // with different profiles are extracted from the image: vibrant, vibrant dark,
-        // vibrant light, muted, muted dark, muted light.
+        // To extract prominent colors from an image, we can use the Platte class.
+        // By passing in a PaletteAsyncListener to the generate() method,
+        // we can generate the palette asynchronously using an AsyncTask
+        // to gather the Palette swatch information from the bitmap.
         Palette.from(bitmap).generate(new Palette.PaletteAsyncListener() {
             public void onGenerated(Palette palette) {
                 Palette.Swatch swatch = Utils.getDominantColor(palette);

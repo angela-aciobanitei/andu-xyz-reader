@@ -121,8 +121,8 @@ public class ArticleGridFragment extends Fragment {
      */
     private void prepareTransitions() {
         isEnterTransitionStarted = new AtomicBoolean();
-        // To make transitions even smoother, we could fade out the card views
-        // from the grid items when the image transitions to the view pager.
+        // To make transitions even smoother, we could fade out the
+        // grid items when the image transitions to the view pager.
          Transition exitTransition = TransitionInflater.from(getContext())
                 .inflateTransition(R.transition.card_view_exit_transition) ;
          exitTransition.setDuration(325);
@@ -238,7 +238,7 @@ public class ArticleGridFragment extends Fragment {
                     @Override
                     public void onChanged(Resource<List<Article>> resource) {
                         // Note: after calling postponeEnterTransition(),
-                        // don't forget to call startPostponedEnterTransition()
+                        // don't forget to call startPostponedEnterTransition().
                         // Forgetting to do so will leave your application in a
                         // state of deadlock, preventing the user from ever being
                         // able to reach the next screen.

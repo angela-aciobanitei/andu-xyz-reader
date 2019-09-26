@@ -102,8 +102,7 @@ public class ArticlesPagerFragment extends Fragment {
         // Because ArticlesPagerFragment contains a series of article details fragments
         // we need to initialize the view pager adapter with the child fragment manager.
         viewPagerAdapter = new ViewPagerAdapter(
-                getChildFragmentManager(),
-                BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
+                getChildFragmentManager(), BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
         binding.articlesViewPager.setAdapter(viewPagerAdapter);
     }
 

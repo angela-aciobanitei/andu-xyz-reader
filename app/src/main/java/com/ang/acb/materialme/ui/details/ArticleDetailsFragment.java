@@ -38,6 +38,7 @@ import com.google.android.material.appbar.AppBarLayout;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import java.util.Objects;
 
 import javax.inject.Inject;
 
@@ -118,9 +119,9 @@ public class ArticleDetailsFragment extends Fragment {
     private void setupToolbar() {
         getHostActivity().setSupportActionBar(binding.detailsToolbar);
         binding.detailsToolbar.setNavigationOnClickListener(view ->
-                // Attempts to navigate up in the navigation hierarchy.
-                NavHostFragment.findNavController(ArticleDetailsFragment.this)
-                        .navigateUp());
+            // Attempts to navigate up in the navigation hierarchy.
+            NavHostFragment.findNavController(ArticleDetailsFragment.this)
+                    .navigateUp());
 
         if (getHostActivity().getSupportActionBar() != null) {
             getHostActivity().getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -207,6 +208,10 @@ public class ArticleDetailsFragment extends Fragment {
             });
 
             GlideApp.with(this)
+                    // Calling Glide.with() returns a RequestBuilder.
+                    // By default you get a Drawable RequestBuilder, but
+                    // you can change the requested type using as... methods.
+                    // For example, asBitmap() returns a Bitmap RequestBuilder.
                     .asBitmap()
                     .load(article.getPhotoUrl())
                     // Tell Glide not to use its standard crossfade animation.
@@ -240,7 +245,6 @@ public class ArticleDetailsFragment extends Fragment {
     private void schedulePostponedEnterTransition() {
         // Before calling startPostponedEnterTransition(), make sure that the
         // view is drawn first using ViewTreeObserver's OnPreDrawListener.
-        // https://medium.com/@ayushkhare/shared-element-transitions-4a645a30c848.
         binding.getRoot().getViewTreeObserver().addOnPreDrawListener(
                 new ViewTreeObserver.OnPreDrawListener() {
                     @Override
@@ -249,18 +253,15 @@ public class ArticleDetailsFragment extends Fragment {
                         // The postponeEnterTransition() is called on the parent, that is
                         // ArticlesPagerFragment, so the startPostponedEnterTransition()
                         // should also be called on the parent to get the transition going.
-                        getParentFragment().startPostponedEnterTransition();
+                        Objects.requireNonNull(getParentFragment())
+                                .startPostponedEnterTransition();
                         return true;
                     }
                 });
     }
 
     private void generatePaletteAsynchronously(Bitmap bitmap) {
-        // By passing in a PaletteAsyncListener to the generate() method, we can generate
-        // the palette asynchronously using an AsyncTask to gather the Palette swatch
-        // information from the bitmap. When a palette is generated, a number of colors
-        // with different profiles are extracted from the image: vibrant, vibrant dark,
-        // vibrant light, muted, muted dark, muted light.
+        // Use PaletteAsyncListener to gather the Palette swatch information from the bitmap.
         Palette.from(bitmap).generate(new Palette.PaletteAsyncListener() {
             public void onGenerated(Palette palette) {
                 Palette.Swatch swatch = Utils.getDominantColor(palette);

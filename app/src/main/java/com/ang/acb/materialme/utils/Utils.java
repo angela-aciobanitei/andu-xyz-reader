@@ -29,6 +29,7 @@ public class Utils {
     }
 
     public static Spanned formatArticleByline(Date publishedDate, String author) {
+        // See: https://medium.com/androiddevelopers/spantastic-text-styling-with-spans-17b0c16b4568
         Spanned byline;
         if (!publishedDate.before(START_OF_EPOCH.getTime())) {
             byline = Html.fromHtml(DateUtils.getRelativeTimeSpanString(
@@ -45,11 +46,18 @@ public class Utils {
     }
 
     public static float dipToPixels(Context context, float dipValue) {
+        // See: https://stackoverflow.com/questions/8399184/convert-dip-to-px-in-android
         DisplayMetrics metrics = context.getResources().getDisplayMetrics();
         return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dipValue, metrics);
     }
 
     public static Palette.Swatch getDominantColor(Palette palette) {
+        // To extract prominent colors from an image, we can use the Platte
+        // class. When a palette is generated, a number of colors with different
+        // profiles are extracted from the image: vibrant, dark vibrant,
+        // light vibrant, muted, dark muted, light muted, and dominant.
+        // These can be retrieved from the appropriate getter method.
+        // See: https://developer.android.com/training/material/palette-colors
         Palette.Swatch result = palette.getDominantSwatch();
         if (palette.getVibrantSwatch() != null) {
             result = palette.getVibrantSwatch();
