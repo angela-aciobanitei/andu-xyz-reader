@@ -102,7 +102,7 @@ class ArticleViewHolder extends RecyclerView.ViewHolder {
                     @Override
                     public boolean onResourceReady(Bitmap resource, Object model, Target<Bitmap> target,
                                                    DataSource dataSource, boolean isFirstResource) {
-                        generatePaletteAsynchronously(resource);
+                        generatePaletteAsync(resource);
                         listener.onLoadCompleted(adapterPosition);
                         return false;
                     }
@@ -110,9 +110,9 @@ class ArticleViewHolder extends RecyclerView.ViewHolder {
                 .into(binding.articleItemThumbnail);
     }
 
-    private void generatePaletteAsynchronously(Bitmap bitmap) {
-        // To extract prominent colors from an image, we can use the Platte class.
-        // By passing in a PaletteAsyncListener to the generate() method,
+    private void generatePaletteAsync(Bitmap bitmap) {
+        // To extract prominent colors from an image, we can use the Platte
+        // class. By passing in a PaletteAsyncListener to generate() method,
         // we can generate the palette asynchronously using an AsyncTask
         // to gather the Palette swatch information from the bitmap.
         Palette.from(bitmap).generate(new Palette.PaletteAsyncListener() {

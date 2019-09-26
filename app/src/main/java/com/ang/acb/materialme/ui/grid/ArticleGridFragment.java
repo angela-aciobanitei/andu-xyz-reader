@@ -1,6 +1,5 @@
 package com.ang.acb.materialme.ui.grid;
 
-
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;

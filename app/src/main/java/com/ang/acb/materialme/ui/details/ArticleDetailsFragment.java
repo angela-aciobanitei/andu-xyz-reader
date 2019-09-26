@@ -15,7 +15,6 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ShareCompat;
 import androidx.core.view.ViewCompat;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.navigation.fragment.NavHostFragment;
@@ -43,12 +42,12 @@ import java.util.Objects;
 import javax.inject.Inject;
 
 import dagger.android.support.AndroidSupportInjection;
-import timber.log.Timber;
+
 
 public class ArticleDetailsFragment extends Fragment {
 
     private static final String ARG_ARTICLE_ID = "ARG_ARTICLE_ID";
-    public static final String ARG_POSITION = "ARG_POSITION";
+    private static final String ARG_POSITION = "ARG_POSITION";
 
     private FragmentArticleDetailsBinding binding;
     private ArticlesViewModel viewModel;
@@ -61,7 +60,7 @@ public class ArticleDetailsFragment extends Fragment {
     // Required empty public constructor
     public ArticleDetailsFragment() {}
 
-    public static ArticleDetailsFragment newInstance(int position, long articleId) {
+    static ArticleDetailsFragment newInstance(int position, long articleId) {
         ArticleDetailsFragment fragment = new ArticleDetailsFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_POSITION, position);
@@ -208,7 +207,7 @@ public class ArticleDetailsFragment extends Fragment {
             });
 
             GlideApp.with(this)
-                    // Calling Glide.with() returns a RequestBuilder.
+                    // Calling GlideApp.with() returns a RequestBuilder.
                     // By default you get a Drawable RequestBuilder, but
                     // you can change the requested type using as... methods.
                     // For example, asBitmap() returns a Bitmap RequestBuilder.
@@ -230,7 +229,7 @@ public class ArticleDetailsFragment extends Fragment {
                         @Override
                         public boolean onResourceReady(Bitmap resource, Object model, Target<Bitmap> target,
                                                        DataSource dataSource, boolean isFirstResource) {
-                            generatePaletteAsynchronously(resource);
+                            generatePaletteAsync(resource);
                             schedulePostponedEnterTransition();
                             return false;
                         }
@@ -260,7 +259,7 @@ public class ArticleDetailsFragment extends Fragment {
                 });
     }
 
-    private void generatePaletteAsynchronously(Bitmap bitmap) {
+    private void generatePaletteAsync(Bitmap bitmap) {
         // Use PaletteAsyncListener to gather the Palette swatch information from the bitmap.
         Palette.from(bitmap).generate(new Palette.PaletteAsyncListener() {
             public void onGenerated(Palette palette) {
