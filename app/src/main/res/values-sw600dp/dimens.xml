@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Article details -->
+    <dimen name="details_metabar_vertical_padding">32dp</dimen>
+    <dimen name="details_metabar_vertical_margin">32dp</dimen>
+    <dimen name="details_metabar_title_bottom_padding">32dp</dimen>
+    <dimen name="details_inner_horizontal_margin">32dp</dimen>
+    <dimen name="details_read_more_btn_padding">48dp</dimen>
+</resources>

@@ -25,7 +25,7 @@
         <com.google.android.material.appbar.AppBarLayout
             android:id="@+id/details_app_bar"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/tall_toolbar_height"
+            android:layout_height="@dimen/details_toolbar_height"
             android:fitsSystemWindows="true"
             android:theme="@style/AppBarOverlay">
 
@@ -35,9 +35,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:fitsSystemWindows="true"
-                app:contentScrim="?attr/colorPrimary"
-                app:expandedTitleMarginEnd="64dp"
-                app:expandedTitleMarginStart="48dp"
+                app:expandedTitleMarginEnd="@dimen/details_collapsing_toolbar_title_margin"
+                app:expandedTitleMarginStart="@dimen/details_collapsing_toolbar_title_margin"
                 app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
                 <ImageView

@@ -49,7 +49,7 @@ class ArticleViewHolder extends RecyclerView.ViewHolder {
 
 
     void bindTo(Article article) {
-        // Bind article data (title, author and thumbnail)
+        // Bind article data (title, subtitle and thumbnail)
         binding.setArticle(article);
         bindArticleThumbnail(article);
 
