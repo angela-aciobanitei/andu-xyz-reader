@@ -18,7 +18,6 @@ abstract class ViewModelModule {
     @ViewModelKey(ArticlesViewModel.class)
     abstract ViewModel bindArticlesViewModel(ArticlesViewModel viewModel);
 
-
     @Binds
     abstract ViewModelProvider.Factory bindViewModelFactory(ArticlesViewModelFactory factory);
 }

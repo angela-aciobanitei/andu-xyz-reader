@@ -47,12 +47,10 @@ import dagger.android.support.AndroidSupportInjection;
 public class ArticleDetailsFragment extends Fragment {
 
     private static final String ARG_ARTICLE_ID = "ARG_ARTICLE_ID";
-    private static final String ARG_POSITION = "ARG_POSITION";
 
     private FragmentArticleDetailsBinding binding;
     private ArticlesViewModel viewModel;
     private long articleId;
-    private int position;
 
     @Inject
     ViewModelProvider.Factory viewModelFactory;
@@ -60,10 +58,9 @@ public class ArticleDetailsFragment extends Fragment {
     // Required empty public constructor
     public ArticleDetailsFragment() {}
 
-    static ArticleDetailsFragment newInstance(int position, long articleId) {
+    static ArticleDetailsFragment newInstance(long articleId) {
         ArticleDetailsFragment fragment = new ArticleDetailsFragment();
         Bundle args = new Bundle();
-        args.putInt(ARG_POSITION, position);
         args.putLong(ARG_ARTICLE_ID, articleId);
         fragment.setArguments(args);
         return fragment;
@@ -84,7 +81,6 @@ public class ArticleDetailsFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         if (getArguments() != null) {
-            position = getArguments().getInt(ARG_POSITION);
             articleId = getArguments().getLong(ARG_ARTICLE_ID);
         }
     }
@@ -158,7 +154,7 @@ public class ArticleDetailsFragment extends Fragment {
     }
 
     private void setupShareFab() {
-        binding.shareFab.setOnClickListener(view ->
+        binding.contentPartialDetails.shareFab.setOnClickListener(view ->
                 startActivity(Intent.createChooser(
                         ShareCompat.IntentBuilder.from(getHostActivity())
                                 .setType("text/plain")
@@ -167,7 +163,9 @@ public class ArticleDetailsFragment extends Fragment {
     }
 
     private void initViewModel() {
-        viewModel = ViewModelProviders.of(this, viewModelFactory)
+        // Note: multiple fragments can share a ViewModel using their activity scope.
+        // See: https://developer.android.com/topic/libraries/architecture/viewmodel#sharing
+        viewModel = ViewModelProviders.of(getHostActivity(), viewModelFactory)
                 .get(ArticlesViewModel.class);
     }
 
@@ -178,28 +176,28 @@ public class ArticleDetailsFragment extends Fragment {
 
     private void populateUi(Resource<List<Article>> resource){
         if (resource != null && resource.data != null) {
-            Article article = resource.data.get(position);
+            Article article = resource.data.get(viewModel.getCurrentPosition());
 
             // Update toolbar title when toolbar is collapsed.
             if (getHostActivity().getSupportActionBar() != null) {
                 setToolbarTitleIfCollapsed(article);
             }
 
-            binding.articleTitle.setText(article.getTitle());
-            binding.articleByline.setText(Utils.formatArticleByline(
+            binding.contentPartialDetails.articleTitle.setText(article.getTitle());
+            binding.contentPartialDetails.articleByline.setText(Utils.formatArticleByline(
                     Utils.formatPublishedDate(article.getPublishedDate()),
                     article.getAuthor()));
 
-            binding.articleBody.setText(Html.fromHtml(article.getBody()
+            binding.contentPartialDetails.articleBody.setText(Html.fromHtml(article.getBody()
                     // Careful: this can trigger an IndexOutOfBoundsException.
                     .substring(0, 1000)
                     .replaceAll("\r\n\r\n", "<br /><br />")
                     .replaceAll("\r\n", " ")
                     .replaceAll(" {2}", "")));
 
-            binding.readMoreButton.setOnClickListener(view -> {
-                binding.readMoreButton.setVisibility(View.GONE);
-                binding.articleBody.setText(Html.fromHtml(article.getBody()
+            binding.contentPartialDetails.readMoreButton.setOnClickListener(view -> {
+                binding.contentPartialDetails.readMoreButton.setVisibility(View.GONE);
+                binding.contentPartialDetails.articleBody.setText(Html.fromHtml(article.getBody()
                         .replaceAll("\r\n\r\n", "<br /><br />")
                         .replaceAll("\r\n", " ")
                         .replaceAll(" {2}", "")));
@@ -264,7 +262,7 @@ public class ArticleDetailsFragment extends Fragment {
             public void onGenerated(Palette palette) {
                 Palette.Swatch swatch = Utils.getDominantColor(palette);
                 if (swatch != null) {
-                    binding.metaBar.setBackgroundColor(swatch.getRgb());
+                    binding.contentPartialDetails.metaBar.setBackgroundColor(swatch.getRgb());
                     binding.detailsCollapsingToolbar.setContentScrimColor(swatch.getRgb());
                 }
             }

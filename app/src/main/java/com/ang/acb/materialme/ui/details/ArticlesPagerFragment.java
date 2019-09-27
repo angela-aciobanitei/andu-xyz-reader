@@ -21,7 +21,7 @@ import androidx.transition.TransitionInflater;
 import com.ang.acb.materialme.R;
 import com.ang.acb.materialme.data.model.Article;
 import com.ang.acb.materialme.data.model.Resource;
-import com.ang.acb.materialme.databinding.FragmentArticlesViewPagerBinding;
+import com.ang.acb.materialme.ui.common.MainActivity;
 import com.ang.acb.materialme.ui.viewmodel.ArticlesViewModel;
 import com.ang.acb.materialme.ui.grid.ArticleGridFragment;
 
@@ -33,7 +33,6 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import dagger.android.support.AndroidSupportInjection;
-import timber.log.Timber;
 
 import static androidx.fragment.app.FragmentStatePagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT;
 
@@ -46,12 +45,9 @@ import static androidx.fragment.app.FragmentStatePagerAdapter.BEHAVIOR_RESUME_ON
  */
 public class ArticlesPagerFragment extends Fragment {
 
-    public static final String ARG_POSITION = "ARG_POSITION";
-
-    private FragmentArticlesViewPagerBinding binding;
     private ArticlesViewModel viewModel;
     private ViewPagerAdapter viewPagerAdapter;
-    private int position;
+    private ViewPager articlesViewPager;
 
     @Inject
     ViewModelProvider.Factory viewModelFactory;
@@ -73,8 +69,6 @@ public class ArticlesPagerFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (getArguments() != null) position = getArguments().getInt(ARG_POSITION);
-
         // Avoid a postponeEnterTransition() on orientation change,
         // and postpone only on first creation.
         if (savedInstanceState == null) postponeEnterTransition();
@@ -84,8 +78,7 @@ public class ArticlesPagerFragment extends Fragment {
     public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment.
-        binding = FragmentArticlesViewPagerBinding.inflate(inflater, container, false);
-        return binding.getRoot();
+        return inflater.inflate(R.layout.fragment_articles_pager, container, false);
     }
 
     @Override
@@ -93,38 +86,45 @@ public class ArticlesPagerFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         initViewModel();
-        setupViewPagerAdapter();
-        updateCurrentPagePosition();
+        setupViewPagerAdapter(view);
         populateUi();
         prepareTransitions();
     }
 
-    private void initViewModel() {
-        viewModel = ViewModelProviders.of(this, viewModelFactory)
-                .get(ArticlesViewModel.class);
-        viewModel.setCurrentPosition(position);
-        Timber.d("Set current position: %s in articles view model.", position);
+    private MainActivity getHostActivity() {
+        return (MainActivity)getActivity();
     }
 
-    private void setupViewPagerAdapter(){
+    private void initViewModel() {
+        // Note: multiple fragments can share a ViewModel using their activity scope.
+        // See: https://developer.android.com/topic/libraries/architecture/viewmodel#sharing
+        viewModel = ViewModelProviders.of(getHostActivity(), viewModelFactory)
+                .get(ArticlesViewModel.class);
+    }
+
+    private void setupViewPagerAdapter(View view){
         // Because ArticlesPagerFragment contains a series of article details fragments
         // we need to initialize the view pager adapter with the child fragment manager.
         viewPagerAdapter = new ViewPagerAdapter(
                 getChildFragmentManager(), BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
-        binding.articlesViewPager.setAdapter(viewPagerAdapter);
-    }
+        articlesViewPager = view.findViewById(R.id.articles_view_pager);
+        articlesViewPager.setAdapter(viewPagerAdapter);
 
-    private void updateCurrentPagePosition(){
         // Add a listener that will update the selection coordinator when paging
         // the articles and save the current page position in articles view model.
-        binding.articlesViewPager.addOnPageChangeListener(
-                new ViewPager.SimpleOnPageChangeListener() {
+        articlesViewPager.addOnPageChangeListener(
+                new ViewPager.OnPageChangeListener() {
                     @Override
                     public void onPageSelected(int position) {
                         viewModel.setCurrentPosition(position);
                     }
-                });
 
+                    @Override
+                    public void onPageScrolled(int pos, float posOffset, int posOffsetPx) {}
+
+                    @Override
+                    public void onPageScrollStateChanged(int state) {}
+                });
     }
 
     private void populateUi() {
@@ -139,7 +139,7 @@ public class ArticlesPagerFragment extends Fragment {
 
                             // Set the currently selected page for the view pager.
                             // To transition immediately, set smoothScroll to false.
-                            binding.articlesViewPager.setCurrentItem(
+                            articlesViewPager.setCurrentItem(
                                     viewModel.getCurrentPosition(), false);
                         }
                     }
@@ -172,7 +172,7 @@ public class ArticlesPagerFragment extends Fragment {
                 // with the current position. At this stage, the method will simply return
                 // the fragment at the position and will not create a new one.
                 Fragment currentFragment = (Fragment) viewPagerAdapter.instantiateItem(
-                        binding.articlesViewPager, position);
+                        articlesViewPager, viewModel.getCurrentPosition());
 
                 // Get the root view for the current fragment layout.
                 View rootView = currentFragment.getView();

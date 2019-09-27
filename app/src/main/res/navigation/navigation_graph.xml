@@ -14,15 +14,11 @@
         <action
             android:id="@+id/action_from_articles_grid_to_articles_pager"
             app:destination="@id/articles_pager_dest" />
-        <argument
-            android:name="position"
-            app:argType="integer"
-            android:defaultValue="0" />
     </fragment>
 
     <fragment
         android:id="@+id/articles_pager_dest"
         android:name="com.ang.acb.materialme.ui.details.ArticlesPagerFragment"
         android:label="fragment_articles_pager"
-        tools:layout="@layout/fragment_articles_view_pager" />
+        tools:layout="@layout/fragment_articles_pager" />
 </navigation>
