@@ -7,7 +7,7 @@ import android.view.View;
  */
 public interface ArticleViewHolderListener {
 
-    void onItemClicked(View view, int adapterPosition);
+    void onItemClicked(View rootView, int adapterPosition);
 
     void onLoadCompleted(int adapterPosition);
 }

@@ -51,8 +51,8 @@ public class ArticleDetailsFragment extends Fragment {
 
     private FragmentArticleDetailsBinding binding;
     private ArticlesViewModel viewModel;
-    private int position;
     private long articleId;
+    private int position;
 
     @Inject
     ViewModelProvider.Factory viewModelFactory;
@@ -158,7 +158,7 @@ public class ArticleDetailsFragment extends Fragment {
     }
 
     private void setupShareFab() {
-        binding.contentPartialDetails.shareFab.setOnClickListener(view ->
+        binding.shareFab.setOnClickListener(view ->
                 startActivity(Intent.createChooser(
                         ShareCompat.IntentBuilder.from(getHostActivity())
                                 .setType("text/plain")
@@ -169,7 +169,6 @@ public class ArticleDetailsFragment extends Fragment {
     private void initViewModel() {
         viewModel = ViewModelProviders.of(this, viewModelFactory)
                 .get(ArticlesViewModel.class);
-        viewModel.setCurrentPosition(position);
     }
 
     private void observeArticleDetails() {
@@ -179,28 +178,28 @@ public class ArticleDetailsFragment extends Fragment {
 
     private void populateUi(Resource<List<Article>> resource){
         if (resource != null && resource.data != null) {
-            Article article = resource.data.get(viewModel.getCurrentPosition());
+            Article article = resource.data.get(position);
 
             // Update toolbar title when toolbar is collapsed.
             if (getHostActivity().getSupportActionBar() != null) {
                 setToolbarTitleIfCollapsed(article);
             }
 
-            binding.contentPartialDetails.articleTitle.setText(article.getTitle());
-            binding.contentPartialDetails.articleByline.setText(Utils.formatArticleByline(
+            binding.articleTitle.setText(article.getTitle());
+            binding.articleByline.setText(Utils.formatArticleByline(
                     Utils.formatPublishedDate(article.getPublishedDate()),
                     article.getAuthor()));
 
-            binding.contentPartialDetails.articleBody.setText(Html.fromHtml(article.getBody()
+            binding.articleBody.setText(Html.fromHtml(article.getBody()
                     // Careful: this can trigger an IndexOutOfBoundsException.
                     .substring(0, 1000)
                     .replaceAll("\r\n\r\n", "<br /><br />")
                     .replaceAll("\r\n", " ")
                     .replaceAll(" {2}", "")));
 
-            binding.contentPartialDetails.readMoreButton.setOnClickListener(view -> {
-                binding.contentPartialDetails.readMoreButton.setVisibility(View.GONE);
-                binding.contentPartialDetails.articleBody.setText(Html.fromHtml(article.getBody()
+            binding.readMoreButton.setOnClickListener(view -> {
+                binding.readMoreButton.setVisibility(View.GONE);
+                binding.articleBody.setText(Html.fromHtml(article.getBody()
                         .replaceAll("\r\n\r\n", "<br /><br />")
                         .replaceAll("\r\n", " ")
                         .replaceAll(" {2}", "")));
@@ -265,7 +264,7 @@ public class ArticleDetailsFragment extends Fragment {
             public void onGenerated(Palette palette) {
                 Palette.Swatch swatch = Utils.getDominantColor(palette);
                 if (swatch != null) {
-                    binding.contentPartialDetails.metaBar.setBackgroundColor(swatch.getRgb());
+                    binding.metaBar.setBackgroundColor(swatch.getRgb());
                     binding.detailsCollapsingToolbar.setContentScrimColor(swatch.getRgb());
                 }
             }

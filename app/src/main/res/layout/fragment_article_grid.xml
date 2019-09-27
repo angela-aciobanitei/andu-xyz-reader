@@ -12,13 +12,13 @@
         tools:context=".ui.common.MainActivity">
 
         <com.google.android.material.appbar.AppBarLayout
-            android:id="@+id/main_app_bar"
+            android:id="@+id/grids_app_bar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:theme="@style/AppBarOverlay">
 
             <androidx.appcompat.widget.Toolbar
-                android:id="@+id/main_toolbar"
+                android:id="@+id/grids_toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:theme="@style/AppBarOverlay"
@@ -38,7 +38,7 @@
         </com.google.android.material.appbar.AppBarLayout>
 
         <androidx.core.widget.NestedScrollView
-            android:id="@+id/main_nested_scroll_view"
+            android:id="@+id/grids_nested_scroll_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:layout_behavior="@string/appbar_scrolling_view_behavior">

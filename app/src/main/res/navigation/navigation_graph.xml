@@ -14,6 +14,10 @@
         <action
             android:id="@+id/action_from_articles_grid_to_articles_pager"
             app:destination="@id/articles_pager_dest" />
+        <argument
+            android:name="position"
+            app:argType="integer"
+            android:defaultValue="0" />
     </fragment>
 
     <fragment

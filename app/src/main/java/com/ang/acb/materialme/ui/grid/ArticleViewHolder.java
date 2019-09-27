@@ -60,7 +60,7 @@ class ArticleViewHolder extends RecyclerView.ViewHolder {
                 String.valueOf(article.getId()));
 
         // Handle article items click events.
-        binding.getRoot().setOnClickListener(view -> {
+        binding.getRoot().setOnClickListener(rootView -> {
                 listener.onItemClicked(binding.getRoot(), getAdapterPosition());
         });
 

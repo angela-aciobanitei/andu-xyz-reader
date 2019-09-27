@@ -33,21 +33,25 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import dagger.android.support.AndroidSupportInjection;
+import timber.log.Timber;
 
 import static androidx.fragment.app.FragmentStatePagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT;
 
 
 /**
- * A fragment for displaying a view pager of articles.
+ * A fragment for displaying a view pager containing a series of article details.
  *
  * See: https://github.com/android/animation-samples/tree/master/GridToPager
  * See: https://android-developers.googleblog.com/2018/02/continuous-shared-element-transitions.html
  */
 public class ArticlesPagerFragment extends Fragment {
 
+    public static final String ARG_POSITION = "ARG_POSITION";
+
     private FragmentArticlesViewPagerBinding binding;
     private ArticlesViewModel viewModel;
     private ViewPagerAdapter viewPagerAdapter;
+    private int position;
 
     @Inject
     ViewModelProvider.Factory viewModelFactory;
@@ -68,6 +72,8 @@ public class ArticlesPagerFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (getArguments() != null) position = getArguments().getInt(ARG_POSITION);
 
         // Avoid a postponeEnterTransition() on orientation change,
         // and postpone only on first creation.
@@ -96,6 +102,8 @@ public class ArticlesPagerFragment extends Fragment {
     private void initViewModel() {
         viewModel = ViewModelProviders.of(this, viewModelFactory)
                 .get(ArticlesViewModel.class);
+        viewModel.setCurrentPosition(position);
+        Timber.d("Set current position: %s in articles view model.", position);
     }
 
     private void setupViewPagerAdapter(){
@@ -116,6 +124,7 @@ public class ArticlesPagerFragment extends Fragment {
                         viewModel.setCurrentPosition(position);
                     }
                 });
+
     }
 
     private void populateUi() {
@@ -163,7 +172,7 @@ public class ArticlesPagerFragment extends Fragment {
                 // with the current position. At this stage, the method will simply return
                 // the fragment at the position and will not create a new one.
                 Fragment currentFragment = (Fragment) viewPagerAdapter.instantiateItem(
-                        binding.articlesViewPager, viewModel.getCurrentPosition());
+                        binding.articlesViewPager, position);
 
                 // Get the root view for the current fragment layout.
                 View rootView = currentFragment.getView();

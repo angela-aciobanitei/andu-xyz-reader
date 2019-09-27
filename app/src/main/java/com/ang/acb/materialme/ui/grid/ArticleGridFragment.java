@@ -45,6 +45,7 @@ import dagger.android.support.AndroidSupportInjection;
 import timber.log.Timber;
 
 import static android.widget.GridLayout.VERTICAL;
+import static com.ang.acb.materialme.ui.details.ArticlesPagerFragment.ARG_POSITION;
 
 /**
  * A fragment that displays a grid of article items.
@@ -102,7 +103,7 @@ public class ArticleGridFragment extends Fragment {
     }
 
     private void setupToolbar(){
-        getHostActivity().setSupportActionBar(binding.mainToolbar);
+        getHostActivity().setSupportActionBar(binding.gridsToolbar);
         if(getHostActivity().getSupportActionBar() != null) {
             // The activity title should not be displayed.
             getHostActivity().getSupportActionBar().setDisplayShowTitleEnabled(false);
@@ -168,7 +169,7 @@ public class ArticleGridFragment extends Fragment {
                             .excludeTarget(rootView, true);
 
                     ImageView transitioningView = rootView.findViewById(R.id.article_item_thumbnail);
-                    navigateToPagerFragment(transitioningView, transitioningView.getTransitionName());
+                    navigateToPagerFragment(transitioningView, transitioningView.getTransitionName(), position);
                 }
 
                 @Override
@@ -181,17 +182,20 @@ public class ArticleGridFragment extends Fragment {
         return listener;
     }
 
-    private void navigateToPagerFragment(ImageView sharedView, String sharedElementName){
+    private void navigateToPagerFragment(ImageView sharedView, String sharedElementName, int position){
         // Create the shared element transition extras.
         FragmentNavigator.Extras extras = new FragmentNavigator.Extras.Builder()
                 .addSharedElement(sharedView, sharedElementName)
                 .build();
 
+        Bundle args = new Bundle() ;
+        args.putInt(ARG_POSITION, position);
+
         // Navigate to destination (ArticlesPagerFragment),
         // passing in the shared element as extras.
         NavHostFragment.findNavController(ArticleGridFragment.this)
                 .navigate(R.id.action_from_articles_grid_to_articles_pager,
-                        null, null, extras);
+                        args, null, extras);
     }
 
     private void schedulePostponedEnterTransition(int position) {
