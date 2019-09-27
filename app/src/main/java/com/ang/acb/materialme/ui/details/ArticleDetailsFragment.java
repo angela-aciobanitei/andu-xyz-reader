@@ -15,6 +15,7 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ShareCompat;
 import androidx.core.view.ViewCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.navigation.fragment.NavHostFragment;
@@ -51,6 +52,7 @@ public class ArticleDetailsFragment extends Fragment {
     private FragmentArticleDetailsBinding binding;
     private ArticlesViewModel viewModel;
     private long articleId;
+    private Article article;
 
     @Inject
     ViewModelProvider.Factory viewModelFactory;
@@ -58,10 +60,10 @@ public class ArticleDetailsFragment extends Fragment {
     // Required empty public constructor
     public ArticleDetailsFragment() {}
 
-    static ArticleDetailsFragment newInstance(long articleId) {
+    static ArticleDetailsFragment newInstance(Article article) {
         ArticleDetailsFragment fragment = new ArticleDetailsFragment();
         Bundle args = new Bundle();
-        args.putLong(ARG_ARTICLE_ID, articleId);
+        args.putParcelable(ARG_ARTICLE_ID, article);
         fragment.setArguments(args);
         return fragment;
     }
@@ -81,7 +83,7 @@ public class ArticleDetailsFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         if (getArguments() != null) {
-            articleId = getArguments().getLong(ARG_ARTICLE_ID);
+            article = getArguments().getParcelable(ARG_ARTICLE_ID);
         }
     }
 
@@ -91,8 +93,8 @@ public class ArticleDetailsFragment extends Fragment {
         // Inflate the layout for this fragment.
         binding = FragmentArticleDetailsBinding.inflate(inflater, container, false);
 
-        // TODO Set the string value of the article id as the unique transition name for the view.
-        ViewCompat.setTransitionName(binding.detailsArticlePhoto, String.valueOf(articleId));
+        // Set the string value of the article id as the unique transition name for the view.
+        ViewCompat.setTransitionName(binding.detailsArticlePhoto, String.valueOf(article.getId()));
 
         return binding.getRoot();
     }
@@ -104,7 +106,8 @@ public class ArticleDetailsFragment extends Fragment {
         setupToolbar();
         setupShareFab();
         initViewModel();
-        observeArticleDetails();
+        //observeArticleDetails();
+        populateUi(article);
     }
 
     private MainActivity getHostActivity() {
@@ -154,7 +157,7 @@ public class ArticleDetailsFragment extends Fragment {
     }
 
     private void setupShareFab() {
-        binding.contentPartialDetails.shareFab.setOnClickListener(view ->
+        binding.shareFab.setOnClickListener(view ->
                 startActivity(Intent.createChooser(
                         ShareCompat.IntentBuilder.from(getHostActivity())
                                 .setType("text/plain")
@@ -169,35 +172,35 @@ public class ArticleDetailsFragment extends Fragment {
                 .get(ArticlesViewModel.class);
     }
 
-    private void observeArticleDetails() {
-        viewModel.getObservableArticles().observe(
-                getViewLifecycleOwner(), this::populateUi);
-    }
+//    private void observeArticleDetails() {
+//        viewModel.getObservableArticles().observe(
+//                getViewLifecycleOwner(), this::populateUi);
+//    }
 
-    private void populateUi(Resource<List<Article>> resource){
-        if (resource != null && resource.data != null) {
-            Article article = resource.data.get(viewModel.getCurrentPosition());
+    private void populateUi(Article article){
+//        if (resource != null && resource.data != null) {
+//            Article article = resource.data.get(viewModel.getCurrentPosition());
 
             // Update toolbar title when toolbar is collapsed.
             if (getHostActivity().getSupportActionBar() != null) {
                 setToolbarTitleIfCollapsed(article);
             }
 
-            binding.contentPartialDetails.articleTitle.setText(article.getTitle());
-            binding.contentPartialDetails.articleByline.setText(Utils.formatArticleByline(
+            binding.articleTitle.setText(article.getTitle());
+            binding.articleByline.setText(Utils.formatArticleByline(
                     Utils.formatPublishedDate(article.getPublishedDate()),
                     article.getAuthor()));
 
-            binding.contentPartialDetails.articleBody.setText(Html.fromHtml(article.getBody()
+            binding.articleBody.setText(Html.fromHtml(article.getBody()
                     // Careful: this can trigger an IndexOutOfBoundsException.
                     .substring(0, 1000)
                     .replaceAll("\r\n\r\n", "<br /><br />")
                     .replaceAll("\r\n", " ")
                     .replaceAll(" {2}", "")));
 
-            binding.contentPartialDetails.readMoreButton.setOnClickListener(view -> {
-                binding.contentPartialDetails.readMoreButton.setVisibility(View.GONE);
-                binding.contentPartialDetails.articleBody.setText(Html.fromHtml(article.getBody()
+            binding.readMoreButton.setOnClickListener(view -> {
+                binding.readMoreButton.setVisibility(View.GONE);
+                binding.articleBody.setText(Html.fromHtml(article.getBody()
                         .replaceAll("\r\n\r\n", "<br /><br />")
                         .replaceAll("\r\n", " ")
                         .replaceAll(" {2}", "")));
@@ -235,7 +238,7 @@ public class ArticleDetailsFragment extends Fragment {
 
             // Binding needs to be executed immediately.
             binding.executePendingBindings();
-        }
+//        }
     }
 
     private void schedulePostponedEnterTransition() {
@@ -262,7 +265,7 @@ public class ArticleDetailsFragment extends Fragment {
             public void onGenerated(Palette palette) {
                 Palette.Swatch swatch = Utils.getDominantColor(palette);
                 if (swatch != null) {
-                    binding.contentPartialDetails.metaBar.setBackgroundColor(swatch.getRgb());
+                    binding.metaBar.setBackgroundColor(swatch.getRgb());
                     binding.detailsCollapsingToolbar.setContentScrimColor(swatch.getRgb());
                 }
             }

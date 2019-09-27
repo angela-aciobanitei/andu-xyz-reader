@@ -86,7 +86,7 @@ public class ArticlesPagerFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         initViewModel();
-        setupViewPagerAdapter(view);
+        setupViewPager(view);
         populateUi();
         prepareTransitions();
     }
@@ -102,7 +102,7 @@ public class ArticlesPagerFragment extends Fragment {
                 .get(ArticlesViewModel.class);
     }
 
-    private void setupViewPagerAdapter(View view){
+    private void setupViewPager(View view){
         // Because ArticlesPagerFragment contains a series of article details fragments
         // we need to initialize the view pager adapter with the child fragment manager.
         viewPagerAdapter = new ViewPagerAdapter(
@@ -113,17 +113,11 @@ public class ArticlesPagerFragment extends Fragment {
         // Add a listener that will update the selection coordinator when paging
         // the articles and save the current page position in articles view model.
         articlesViewPager.addOnPageChangeListener(
-                new ViewPager.OnPageChangeListener() {
+                new ViewPager.SimpleOnPageChangeListener() {
                     @Override
                     public void onPageSelected(int position) {
                         viewModel.setCurrentPosition(position);
                     }
-
-                    @Override
-                    public void onPageScrolled(int pos, float posOffset, int posOffsetPx) {}
-
-                    @Override
-                    public void onPageScrollStateChanged(int state) {}
                 });
     }
 

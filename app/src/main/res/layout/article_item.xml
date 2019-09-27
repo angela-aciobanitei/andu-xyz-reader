@@ -18,6 +18,7 @@
         android:focusable="true"
         app:cardElevation="@dimen/article_item_card_elevation"
         app:cardCornerRadius="@dimen/article_item_card_corner_radius"
+        app:cardPreventCornerOverlap="true"
         app:strokeWidth="@dimen/article_item_card_stroke_width">
 
         <LinearLayout
