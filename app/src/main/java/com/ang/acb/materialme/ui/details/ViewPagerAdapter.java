@@ -15,8 +15,8 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
 
     private List<Article> articles;
 
-    public ViewPagerAdapter(@NonNull FragmentManager fm, int behavior) {
-        super(fm, behavior);
+    public ViewPagerAdapter(@NonNull FragmentManager fragmentManager, int behavior) {
+        super(fragmentManager, behavior);
     }
 
     @NotNull

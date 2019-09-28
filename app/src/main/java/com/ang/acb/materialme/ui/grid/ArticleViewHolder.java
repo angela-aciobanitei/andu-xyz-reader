@@ -76,9 +76,9 @@ class ArticleViewHolder extends RecyclerView.ViewHolder {
         final int adapterPosition = getAdapterPosition();
         GlideApp.with(binding.getRoot().getContext())
                 // Calling Glide.with() returns a RequestBuilder.
-                // By default you get a Drawable RequestBuilder, but
+                // By default you get a RequestBuilder<Drawable>, but
                 // you can change the requested type using as... methods.
-                // For example, asBitmap() returns a Bitmap RequestBuilder.
+                // For example, asBitmap() returns a RequestListener<Bitmap>.
                 .asBitmap()
                 .load(article.getThumbUrl())
                 // Tell Glide not to use its standard crossfade animation.
@@ -86,8 +86,8 @@ class ArticleViewHolder extends RecyclerView.ViewHolder {
                 // Display a placeholder until the image is loaded and processed.
                 .placeholder(R.color.photoPlaceholder)
                 // Transform bitmap to obtain rounded corners.
-                .apply(RequestOptions.bitmapTransform(new RoundedCorners((int)
-                        Utils.dipToPixels(binding.getRoot().getContext(),
+                .apply(RequestOptions.bitmapTransform(new RoundedCorners(
+                        (int) Utils.dipToPixels(binding.getRoot().getContext(),
                         6))))
                 // Keep track of errors and successful image loading.
                 .listener(new RequestListener<Bitmap>() {

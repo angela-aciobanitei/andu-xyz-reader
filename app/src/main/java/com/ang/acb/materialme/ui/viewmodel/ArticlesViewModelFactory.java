@@ -12,7 +12,7 @@ import javax.inject.Provider;
 import javax.inject.Singleton;
 
 /**
- * A factory class for creating ViewModels. Note: Dagger 2 allows multibindings and
+ * A factory class for creating ViewModels. Dagger 2 allows multibindings and
  * with it the possibility to create a "map" of objects with a specific key:
  *      the key: for example the class type of ViewModel MyViewModel::class
  *      the value: the instance of ViewModel MyViewModel(repository, …)
@@ -51,8 +51,8 @@ public class ArticlesViewModelFactory implements ViewModelProvider.Factory {
             }
         }
         if (creator == null) {
-            // If all previous attempts of getting a valid Provider from the map
-            // fail, throw an exception.
+            // If all previous attempts of getting a valid Provider from the map fail,
+            // throw an exception.
             throw new IllegalArgumentException("Unknown model class: " + modelClass);
         }
         try {

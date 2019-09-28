@@ -13,7 +13,9 @@ import android.view.ViewTreeObserver;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ShareCompat;
+import androidx.core.view.OnApplyWindowInsetsListener;
 import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -160,6 +162,27 @@ public class ArticleDetailsFragment extends Fragment {
                                 .getIntent(), getString(R.string.action_share))));
     }
 
+    private void insetLayout() {
+        // See: https://chris.banes.dev/2019/04/12/insets-listeners-to-layouts/
+        ViewCompat.setOnApplyWindowInsetsListener(
+                binding.detailsCoordinatorLayout,
+                new OnApplyWindowInsetsListener() {
+                    @Override
+                    public WindowInsetsCompat onApplyWindowInsets(View view, WindowInsetsCompat insets) {
+                        // Apply insets for toolbar.
+                        ViewGroup.MarginLayoutParams toolbarLayoutParams = (ViewGroup.MarginLayoutParams)
+                                binding.detailsToolbar.getLayoutParams();
+                        toolbarLayoutParams.topMargin = insets.getSystemWindowInsetTop();
+                        binding.detailsToolbar.setLayoutParams(toolbarLayoutParams);
+
+                        // Clear listener to ensure that insets won't be reapplied.
+                        view.setOnApplyWindowInsetsListener(null);
+                        return insets.consumeSystemWindowInsets();
+                    }
+        });
+        ViewCompat.requestApplyInsets(binding.detailsCoordinatorLayout);
+    }
+
     private void initViewModel() {
         // Note: multiple fragments can share a ViewModel using their activity scope.
         // See: https://developer.android.com/topic/libraries/architecture/viewmodel#sharing
@@ -168,7 +191,7 @@ public class ArticleDetailsFragment extends Fragment {
     }
 
     private void observeCurrentArticle() {
-        viewModel.getCurrentArticle().observe(
+        viewModel.getArticleById(articleId).observe(
                 getViewLifecycleOwner(),
                 new Observer<Article>() {
                     @Override
@@ -242,19 +265,21 @@ public class ArticleDetailsFragment extends Fragment {
     private void schedulePostponedEnterTransition() {
         // Before calling startPostponedEnterTransition(), make sure that the
         // view is drawn first using ViewTreeObserver's OnPreDrawListener.
-        binding.getRoot().getViewTreeObserver().addOnPreDrawListener(
-                new ViewTreeObserver.OnPreDrawListener() {
-                    @Override
-                    public boolean onPreDraw() {
-                        binding.getRoot().getViewTreeObserver().removeOnPreDrawListener(this);
-                        // The postponeEnterTransition() is called on the parent, that is
-                        // ArticlesPagerFragment, so the startPostponedEnterTransition()
-                        // should also be called on the parent to get the transition going.
-                        Objects.requireNonNull(getParentFragment())
-                                .startPostponedEnterTransition();
-                        return true;
+            binding.getRoot().getViewTreeObserver().addOnPreDrawListener(
+                    new ViewTreeObserver.OnPreDrawListener() {
+                        @Override
+                        public boolean onPreDraw() {
+                            binding.getRoot().getViewTreeObserver()
+                                    .removeOnPreDrawListener(this);
+                            // The postponeEnterTransition() is called on the parent, that is
+                            // ArticlesPagerFragment, so the startPostponedEnterTransition()
+                            // should also be called on the parent to get the transition going.
+                            Objects.requireNonNull(getParentFragment())
+                                    .startPostponedEnterTransition();
+                            return true;
+                        }
                     }
-                });
+            );
     }
 
     private void generatePaletteAsync(Bitmap bitmap) {

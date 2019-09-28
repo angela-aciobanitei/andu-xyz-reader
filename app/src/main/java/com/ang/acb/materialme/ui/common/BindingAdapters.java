@@ -1,13 +1,8 @@
 package com.ang.acb.materialme.ui.common;
 
 import android.view.View;
-import android.widget.ImageView;
 
 import androidx.databinding.BindingAdapter;
-
-import com.ang.acb.materialme.R;
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
 
 /**
  * Binding adapters are responsible for making the appropriate framework calls to set values.

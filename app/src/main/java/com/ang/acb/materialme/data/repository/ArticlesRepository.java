@@ -70,7 +70,7 @@ public class ArticlesRepository {
         }.asLiveData();
     }
 
-    public LiveData<Article> getArticle(long id){
+    public LiveData<Article> getArticleById(long id){
         return database.articleDao().getArticleById(id);
     }
 }

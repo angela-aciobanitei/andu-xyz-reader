@@ -1,11 +1,7 @@
 package com.ang.acb.materialme.data.model;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
-import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 import com.google.gson.annotations.Expose;
@@ -15,7 +11,7 @@ import com.google.gson.annotations.SerializedName;
  * Immutable model class for an Article.
  */
 @Entity(tableName = "articles")
-public class Article implements Parcelable {
+public class Article {
 
     @PrimaryKey
     @ColumnInfo(name = "id")
@@ -54,59 +50,6 @@ public class Article implements Parcelable {
     @SerializedName("published_date")
     @Expose
     private String publishedDate;
-
-    public Article(long id, String body, String photoUrl, String thumbUrl, String author,
-                   String title, float aspectRatio, String publishedDate) {
-        this.id = id;
-        this.body = body;
-        this.photoUrl = photoUrl;
-        this.thumbUrl = thumbUrl;
-        this.author = author;
-        this.title = title;
-        this.aspectRatio = aspectRatio;
-        this.publishedDate = publishedDate;
-    }
-
-    @Ignore
-    protected Article(Parcel in) {
-        id = in.readLong();
-        body = in.readString();
-        photoUrl = in.readString();
-        thumbUrl = in.readString();
-        author = in.readString();
-        title = in.readString();
-        aspectRatio = in.readFloat();
-        publishedDate = in.readString();
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeLong(id);
-        dest.writeString(body);
-        dest.writeString(photoUrl);
-        dest.writeString(thumbUrl);
-        dest.writeString(author);
-        dest.writeString(title);
-        dest.writeFloat(aspectRatio);
-        dest.writeString(publishedDate);
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    public static final Creator<Article> CREATOR = new Creator<Article>() {
-        @Override
-        public Article createFromParcel(Parcel in) {
-            return new Article(in);
-        }
-
-        @Override
-        public Article[] newArray(int size) {
-            return new Article[size];
-        }
-    };
 
     public long getId() {
         return id;

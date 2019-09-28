@@ -45,7 +45,6 @@ import dagger.android.support.AndroidSupportInjection;
 import timber.log.Timber;
 
 import static android.widget.GridLayout.VERTICAL;
-
 /**
  * A fragment that displays a grid of article items.
  *
@@ -117,7 +116,7 @@ public class ArticleGridFragment extends Fragment {
     }
 
     /**
-     * Prepares the shared element transition to and back to the {@link ArticlesPagerFragment}.
+     * Prepares the shared element transition to and from the {@link ArticlesPagerFragment}.
      */
     private void prepareTransitions() {
         isEnterTransitionStarted = new AtomicBoolean();
@@ -141,7 +140,7 @@ public class ArticleGridFragment extends Fragment {
             public void onMapSharedElements(List<String> names, Map<String, View> sharedElements) {
                 // Locate the ViewHolder for the clicked position.
                 RecyclerView.ViewHolder selectedViewHolder = binding.articlesRecyclerView
-                        .findViewHolderForAdapterPosition(viewModel.getPositionLiveDataValue());
+                        .findViewHolderForAdapterPosition(viewModel.getCurrentPosition());
                 if (selectedViewHolder == null || selectedViewHolder.itemView == null) return;
 
                 // We are only interested in a single ImageView transition from the grid to the
@@ -160,7 +159,7 @@ public class ArticleGridFragment extends Fragment {
                 @Override
                 public void onItemClicked(View rootView, int position) {
                     // Save current position to view model.
-                    viewModel.setPositionLiveData(position);
+                    viewModel.setCurrentPosition(position);
 
                     // Exclude the clicked card from the exit transition (the card
                     // will disappear immediately instead of fading out with the
@@ -198,7 +197,7 @@ public class ArticleGridFragment extends Fragment {
     private void schedulePostponedEnterTransition(int position) {
         // Before calling startPostponedEnterTransition() make sure
         // that the selected image loading is completed.
-        if (viewModel.getPositionLiveDataValue() != position) return;
+        if (viewModel.getCurrentPosition() != position) return;
         if (isEnterTransitionStarted.getAndSet(true)) return;
 
         // Before calling startPostponedEnterTransition(), make sure that
@@ -228,7 +227,7 @@ public class ArticleGridFragment extends Fragment {
     private void setupAdapter() {
         adapter =  new ArticlesAdapter(getViewHolderListener());
         binding.articlesRecyclerView.setAdapter(adapter);
-        Timber.d("Setup article list adapter.");
+        Timber.d("Setup articles adapter.");
     }
 
     private void populateUi() {
@@ -265,14 +264,14 @@ public class ArticleGridFragment extends Fragment {
                 final RecyclerView.LayoutManager layoutManager =
                         binding.articlesRecyclerView.getLayoutManager();
                 View viewAtPosition = Objects.requireNonNull(layoutManager)
-                        .findViewByPosition(viewModel.getPositionLiveDataValue());
+                        .findViewByPosition(viewModel.getCurrentPosition());
 
                 // Scroll to position if the view for the current position is null (not
                 // currently part of layout manager children), or it's not completely visible.
-                if (viewAtPosition == null || layoutManager.isViewPartiallyVisible(
-                        viewAtPosition, false, true)) {
+                if (viewAtPosition == null || (layoutManager.isViewPartiallyVisible(
+                        viewAtPosition, false, true))) {
                     binding.articlesRecyclerView.post(() ->
-                        layoutManager.scrollToPosition(viewModel.getPositionLiveDataValue()));
+                        layoutManager.scrollToPosition(viewModel.getCurrentPosition()));
                 }
             }
         });
