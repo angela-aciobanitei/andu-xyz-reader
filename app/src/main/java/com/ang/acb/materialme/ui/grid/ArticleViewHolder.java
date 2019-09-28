@@ -53,7 +53,7 @@ class ArticleViewHolder extends RecyclerView.ViewHolder {
         binding.setArticle(article);
         bindArticleThumbnail(article);
 
-        // TODO Set the string value of the article ID as the unique transition name
+        // Set the string value of the article ID as the unique transition name
         // for the image view that will be used in the shared element transition.
         ViewCompat.setTransitionName(
                 binding.articleItemThumbnail,

@@ -21,6 +21,10 @@ public interface ArticleDao {
     void insertAllArticles(List<Article> articles);
 
     @Transaction
+    @Query("SELECT * FROM articles WHERE id= :articleId")
+    LiveData<Article> getArticleById(long articleId);
+
+    @Transaction
     @Query("SELECT * FROM articles")
     LiveData<List<Article>> getAllArticles();
 

@@ -2,12 +2,14 @@ package com.ang.acb.materialme.ui.common;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 
 import android.os.Bundle;
 
 import com.ang.acb.materialme.R;
+import com.ang.acb.materialme.ui.grid.ArticleGridFragment;
 import com.ang.acb.materialme.ui.viewmodel.ArticlesViewModel;
 
 import javax.inject.Inject;

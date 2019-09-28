@@ -69,4 +69,8 @@ public class ArticlesRepository {
             }
         }.asLiveData();
     }
+
+    public LiveData<Article> getArticle(long id){
+        return database.articleDao().getArticleById(id);
+    }
 }

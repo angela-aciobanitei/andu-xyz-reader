@@ -22,7 +22,7 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
     @NotNull
     @Override
     public Fragment getItem(int position) {
-        return ArticleDetailsFragment.newInstance(articles.get(position));
+        return ArticleDetailsFragment.newInstance(articles.get(position).getId());
     }
 
     @Override
@@ -34,4 +34,6 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
         this.articles = articles;
         notifyDataSetChanged();
     }
+
+
 }

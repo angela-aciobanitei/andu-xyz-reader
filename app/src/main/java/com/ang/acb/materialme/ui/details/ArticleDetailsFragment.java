@@ -23,7 +23,6 @@ import androidx.palette.graphics.Palette;
 
 import com.ang.acb.materialme.R;
 import com.ang.acb.materialme.data.model.Article;
-import com.ang.acb.materialme.data.model.Resource;
 import com.ang.acb.materialme.databinding.FragmentArticleDetailsBinding;
 import com.ang.acb.materialme.ui.viewmodel.ArticlesViewModel;
 import com.ang.acb.materialme.ui.common.MainActivity;
@@ -37,7 +36,6 @@ import com.google.android.material.appbar.AppBarLayout;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
 import java.util.Objects;
 
 import javax.inject.Inject;
@@ -52,7 +50,6 @@ public class ArticleDetailsFragment extends Fragment {
     private FragmentArticleDetailsBinding binding;
     private ArticlesViewModel viewModel;
     private long articleId;
-    private Article article;
 
     @Inject
     ViewModelProvider.Factory viewModelFactory;
@@ -60,10 +57,10 @@ public class ArticleDetailsFragment extends Fragment {
     // Required empty public constructor
     public ArticleDetailsFragment() {}
 
-    static ArticleDetailsFragment newInstance(Article article) {
+    static ArticleDetailsFragment newInstance(long articleId) {
         ArticleDetailsFragment fragment = new ArticleDetailsFragment();
         Bundle args = new Bundle();
-        args.putParcelable(ARG_ARTICLE_ID, article);
+        args.putLong(ARG_ARTICLE_ID, articleId);
         fragment.setArguments(args);
         return fragment;
     }
@@ -83,7 +80,7 @@ public class ArticleDetailsFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         if (getArguments() != null) {
-            article = getArguments().getParcelable(ARG_ARTICLE_ID);
+            articleId = getArguments().getLong(ARG_ARTICLE_ID);
         }
     }
 
@@ -94,8 +91,7 @@ public class ArticleDetailsFragment extends Fragment {
         binding = FragmentArticleDetailsBinding.inflate(inflater, container, false);
 
         // Set the string value of the article id as the unique transition name for the view.
-        ViewCompat.setTransitionName(binding.detailsArticlePhoto, String.valueOf(article.getId()));
-
+        ViewCompat.setTransitionName(binding.detailsArticlePhoto, String.valueOf(articleId));
         return binding.getRoot();
     }
 
@@ -106,8 +102,7 @@ public class ArticleDetailsFragment extends Fragment {
         setupToolbar();
         setupShareFab();
         initViewModel();
-        //observeArticleDetails();
-        populateUi(article);
+        observeCurrentArticle();
     }
 
     private MainActivity getHostActivity() {
@@ -172,73 +167,76 @@ public class ArticleDetailsFragment extends Fragment {
                 .get(ArticlesViewModel.class);
     }
 
-//    private void observeArticleDetails() {
-//        viewModel.getObservableArticles().observe(
-//                getViewLifecycleOwner(), this::populateUi);
-//    }
+    private void observeCurrentArticle() {
+        viewModel.getCurrentArticle().observe(
+                getViewLifecycleOwner(),
+                new Observer<Article>() {
+                    @Override
+                    public void onChanged(Article article) {
+                        if (article != null) populateUi(article);
+                    }
+        });
+    }
 
     private void populateUi(Article article){
-//        if (resource != null && resource.data != null) {
-//            Article article = resource.data.get(viewModel.getCurrentPosition());
+        // Update toolbar title when toolbar is collapsed.
+        if (getHostActivity().getSupportActionBar() != null) {
+            setToolbarTitleIfCollapsed(article);
+        }
 
-            // Update toolbar title when toolbar is collapsed.
-            if (getHostActivity().getSupportActionBar() != null) {
-                setToolbarTitleIfCollapsed(article);
-            }
+        binding.articleTitle.setText(article.getTitle());
+        binding.articleByline.setText(Utils.formatArticleByline(
+                Utils.formatPublishedDate(article.getPublishedDate()),
+                article.getAuthor()));
 
-            binding.articleTitle.setText(article.getTitle());
-            binding.articleByline.setText(Utils.formatArticleByline(
-                    Utils.formatPublishedDate(article.getPublishedDate()),
-                    article.getAuthor()));
+        binding.articleBody.setText(Html.fromHtml(article.getBody()
+                // Careful: this can trigger an IndexOutOfBoundsException.
+                .substring(0, 1000)
+                .replaceAll("\r\n\r\n", "<br /><br />")
+                .replaceAll("\r\n", " ")
+                .replaceAll(" {2}", "")));
 
+        binding.readMoreButton.setOnClickListener(view -> {
+            binding.readMoreButton.setVisibility(View.GONE);
             binding.articleBody.setText(Html.fromHtml(article.getBody()
-                    // Careful: this can trigger an IndexOutOfBoundsException.
-                    .substring(0, 1000)
                     .replaceAll("\r\n\r\n", "<br /><br />")
                     .replaceAll("\r\n", " ")
                     .replaceAll(" {2}", "")));
+        });
 
-            binding.readMoreButton.setOnClickListener(view -> {
-                binding.readMoreButton.setVisibility(View.GONE);
-                binding.articleBody.setText(Html.fromHtml(article.getBody()
-                        .replaceAll("\r\n\r\n", "<br /><br />")
-                        .replaceAll("\r\n", " ")
-                        .replaceAll(" {2}", "")));
-            });
+        GlideApp.with(this)
+                // Calling GlideApp.with() returns a RequestBuilder.
+                // By default you get a Drawable RequestBuilder, but
+                // you can change the requested type using as... methods.
+                // For example, asBitmap() returns a Bitmap RequestBuilder.
+                .asBitmap()
+                .load(article.getPhotoUrl())
+                // Tell Glide not to use its standard crossfade animation.
+                .dontAnimate()
+                // Display a placeholder until the image is loaded and processed.
+                .placeholder(R.color.photoPlaceholder)
+                // Keep track of errors and successful image loading.
+                .listener(new RequestListener<Bitmap>() {
+                    @Override
+                    public boolean onLoadFailed(@Nullable GlideException e, Object
+                            model, Target<Bitmap> target, boolean isFirstResource) {
+                        schedulePostponedEnterTransition();
+                        return false;
+                    }
 
-            GlideApp.with(this)
-                    // Calling GlideApp.with() returns a RequestBuilder.
-                    // By default you get a Drawable RequestBuilder, but
-                    // you can change the requested type using as... methods.
-                    // For example, asBitmap() returns a Bitmap RequestBuilder.
-                    .asBitmap()
-                    .load(article.getPhotoUrl())
-                    // Tell Glide not to use its standard crossfade animation.
-                    .dontAnimate()
-                    // Display a placeholder until the image is loaded and processed.
-                    .placeholder(R.color.photoPlaceholder)
-                    // Keep track of errors and successful image loading.
-                    .listener(new RequestListener<Bitmap>() {
-                        @Override
-                        public boolean onLoadFailed(@Nullable GlideException e, Object
-                                model, Target<Bitmap> target, boolean isFirstResource) {
-                            schedulePostponedEnterTransition();
-                            return false;
-                        }
+                    @Override
+                    public boolean onResourceReady(Bitmap resource, Object model, Target<Bitmap> target,
+                                                   DataSource dataSource, boolean isFirstResource) {
+                        generatePaletteAsync(resource);
+                        schedulePostponedEnterTransition();
+                        return false;
+                    }
+                })
+                .into(binding.detailsArticlePhoto);
 
-                        @Override
-                        public boolean onResourceReady(Bitmap resource, Object model, Target<Bitmap> target,
-                                                       DataSource dataSource, boolean isFirstResource) {
-                            generatePaletteAsync(resource);
-                            schedulePostponedEnterTransition();
-                            return false;
-                        }
-                    })
-                    .into(binding.detailsArticlePhoto);
+        // Binding needs to be executed immediately.
+        binding.executePendingBindings();
 
-            // Binding needs to be executed immediately.
-            binding.executePendingBindings();
-//        }
     }
 
     private void schedulePostponedEnterTransition() {

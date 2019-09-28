@@ -106,7 +106,8 @@ public class ArticlesPagerFragment extends Fragment {
         // Because ArticlesPagerFragment contains a series of article details fragments
         // we need to initialize the view pager adapter with the child fragment manager.
         viewPagerAdapter = new ViewPagerAdapter(
-                getChildFragmentManager(), BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
+                getChildFragmentManager(),
+                BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
         articlesViewPager = view.findViewById(R.id.articles_view_pager);
         articlesViewPager.setAdapter(viewPagerAdapter);
 
@@ -116,7 +117,7 @@ public class ArticlesPagerFragment extends Fragment {
                 new ViewPager.SimpleOnPageChangeListener() {
                     @Override
                     public void onPageSelected(int position) {
-                        viewModel.setCurrentPosition(position);
+                        viewModel.setPositionLiveData(position);
                     }
                 });
     }
@@ -134,7 +135,7 @@ public class ArticlesPagerFragment extends Fragment {
                             // Set the currently selected page for the view pager.
                             // To transition immediately, set smoothScroll to false.
                             articlesViewPager.setCurrentItem(
-                                    viewModel.getCurrentPosition(), false);
+                                    viewModel.getPositionLiveDataValue(), false);
                         }
                     }
                 }
@@ -166,7 +167,8 @@ public class ArticlesPagerFragment extends Fragment {
                 // with the current position. At this stage, the method will simply return
                 // the fragment at the position and will not create a new one.
                 Fragment currentFragment = (Fragment) viewPagerAdapter.instantiateItem(
-                        articlesViewPager, viewModel.getCurrentPosition());
+                        articlesViewPager,
+                        viewModel.getPositionLiveDataValue());
 
                 // Get the root view for the current fragment layout.
                 View rootView = currentFragment.getView();

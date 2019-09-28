@@ -141,7 +141,7 @@ public class ArticleGridFragment extends Fragment {
             public void onMapSharedElements(List<String> names, Map<String, View> sharedElements) {
                 // Locate the ViewHolder for the clicked position.
                 RecyclerView.ViewHolder selectedViewHolder = binding.articlesRecyclerView
-                        .findViewHolderForAdapterPosition(viewModel.getCurrentPosition());
+                        .findViewHolderForAdapterPosition(viewModel.getPositionLiveDataValue());
                 if (selectedViewHolder == null || selectedViewHolder.itemView == null) return;
 
                 // We are only interested in a single ImageView transition from the grid to the
@@ -160,7 +160,7 @@ public class ArticleGridFragment extends Fragment {
                 @Override
                 public void onItemClicked(View rootView, int position) {
                     // Save current position to view model.
-                    viewModel.setCurrentPosition(position);
+                    viewModel.setPositionLiveData(position);
 
                     // Exclude the clicked card from the exit transition (the card
                     // will disappear immediately instead of fading out with the
@@ -198,7 +198,7 @@ public class ArticleGridFragment extends Fragment {
     private void schedulePostponedEnterTransition(int position) {
         // Before calling startPostponedEnterTransition() make sure
         // that the selected image loading is completed.
-        if (viewModel.getCurrentPosition() != position) return;
+        if (viewModel.getPositionLiveDataValue() != position) return;
         if (isEnterTransitionStarted.getAndSet(true)) return;
 
         // Before calling startPostponedEnterTransition(), make sure that
@@ -243,7 +243,7 @@ public class ArticleGridFragment extends Fragment {
                         // state of deadlock, preventing the user from ever being
                         // able to reach the next screen.
                         postponeEnterTransition();
-                        Timber.d("Observe article list.");
+                        Timber.d("Observe all articles.");
                         if (resource != null && resource.data != null) {
                             adapter.submitList(resource.data);
                         }
@@ -265,14 +265,14 @@ public class ArticleGridFragment extends Fragment {
                 final RecyclerView.LayoutManager layoutManager =
                         binding.articlesRecyclerView.getLayoutManager();
                 View viewAtPosition = Objects.requireNonNull(layoutManager)
-                        .findViewByPosition(viewModel.getCurrentPosition());
+                        .findViewByPosition(viewModel.getPositionLiveDataValue());
 
                 // Scroll to position if the view for the current position is null (not
                 // currently part of layout manager children), or it's not completely visible.
                 if (viewAtPosition == null || layoutManager.isViewPartiallyVisible(
                         viewAtPosition, false, true)) {
                     binding.articlesRecyclerView.post(() ->
-                        layoutManager.scrollToPosition(viewModel.getCurrentPosition()));
+                        layoutManager.scrollToPosition(viewModel.getPositionLiveDataValue()));
                 }
             }
         });
