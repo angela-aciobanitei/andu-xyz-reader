@@ -31,7 +31,6 @@ import com.ang.acb.materialme.ui.viewmodel.ArticlesViewModel;
 import com.ang.acb.materialme.ui.common.MainActivity;
 import com.ang.acb.materialme.ui.details.ArticlesPagerFragment;
 import com.ang.acb.materialme.utils.GridMarginDecoration;
-import com.ang.acb.materialme.utils.Utils;
 
 import org.jetbrains.annotations.NotNull;
 

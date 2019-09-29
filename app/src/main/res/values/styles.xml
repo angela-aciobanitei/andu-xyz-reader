@@ -7,13 +7,22 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-
+        <item name="android:textViewStyle">@style/customFontStyle</item>
         <item name="android:windowTranslucentStatus">true</item>
         <item name="android:windowTranslucentNavigation">true</item>
     </style>
 
-    <!--Toolbar themes. -->
+    <!-- Toolbar themes. -->
     <style name="AppBarOverlay" parent="ThemeOverlay.MaterialComponents.Dark.ActionBar"/>
-    <style name="PopupOverlay" parent="ThemeOverlay.MaterialComponents.Light" />
+    <style name="PopupOverlay" parent="ThemeOverlay.MaterialComponents.Light"/>
+
+    <!-- Set Custom Font for entire App, https://www.youtube.com/watch?v=6r-i2yB4ujU -->
+    <style name="customFontStyle" parent="android:Widget.TextView">
+        <item name="android:fontFamily">@font/sansation</item>
+    </style>
+
+    <style name="TextAppearance.ToolbarFont" parent="android:TextAppearance">
+        <item name="android:fontFamily">@font/sansation</item>
+    </style>
 
 </resources>

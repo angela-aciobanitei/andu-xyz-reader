@@ -127,6 +127,27 @@ public class ArticleDetailsFragment extends Fragment {
         applyWindowInsets(binding.detailsCoordinatorLayout, binding.detailsToolbar);
     }
 
+    private void applyWindowInsets(CoordinatorLayout coordinatorLayout, Toolbar toolbar) {
+        // See: https://chris.banes.dev/2019/04/12/insets-listeners-to-layouts/
+        ViewCompat.setOnApplyWindowInsetsListener(
+                coordinatorLayout,
+                new OnApplyWindowInsetsListener() {
+                    @Override
+                    public WindowInsetsCompat onApplyWindowInsets(View view, WindowInsetsCompat insets) {
+                        // Apply insets for toolbar.
+                        ViewGroup.MarginLayoutParams toolbarLayoutParams = (ViewGroup.MarginLayoutParams)
+                                toolbar.getLayoutParams();
+                        toolbarLayoutParams.topMargin = insets.getSystemWindowInsetTop();
+                        toolbar.setLayoutParams(toolbarLayoutParams);
+
+                        // Clear listener to ensure that insets won't be reapplied.
+                        view.setOnApplyWindowInsetsListener(null);
+                        return insets.consumeSystemWindowInsets();
+                    }
+                });
+        ViewCompat.requestApplyInsets(coordinatorLayout);
+    }
+
     private void setToolbarTitleIfCollapsed(Article article) {
         // To set the toolbar title only when the toolbar is collapsed, we need to add an
         // OnOffsetChangedListener on AppBarLayout to determine when CollapsingToolbarLayout
@@ -164,27 +185,6 @@ public class ArticleDetailsFragment extends Fragment {
                                 .setType("text/plain")
                                 .setText("Some sample text")
                                 .getIntent(), getString(R.string.action_share))));
-    }
-
-    private void applyWindowInsets(CoordinatorLayout coordinatorLayout, Toolbar toolbar) {
-        // See: https://chris.banes.dev/2019/04/12/insets-listeners-to-layouts/
-        ViewCompat.setOnApplyWindowInsetsListener(
-                coordinatorLayout,
-                new OnApplyWindowInsetsListener() {
-                    @Override
-                    public WindowInsetsCompat onApplyWindowInsets(View view, WindowInsetsCompat insets) {
-                        // Apply insets for toolbar.
-                        ViewGroup.MarginLayoutParams toolbarLayoutParams = (ViewGroup.MarginLayoutParams)
-                                toolbar.getLayoutParams();
-                        toolbarLayoutParams.topMargin = insets.getSystemWindowInsetTop();
-                        toolbar.setLayoutParams(toolbarLayoutParams);
-
-                        // Clear listener to ensure that insets won't be reapplied.
-                        view.setOnApplyWindowInsetsListener(null);
-                        return insets.consumeSystemWindowInsets();
-                    }
-                });
-        ViewCompat.requestApplyInsets(coordinatorLayout);
     }
 
     private void initViewModel() {

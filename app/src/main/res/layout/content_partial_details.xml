@@ -87,7 +87,7 @@
             android:layout_below="@+id/article_body"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="@dimen/details_inner_vertical_margin"
-            android:layout_marginBottom="@dimen/details_inner_vertical_margin"
+            android:layout_marginBottom="88dp"
             android:layout_marginEnd="@dimen/details_inner_horizontal_margin"
             android:layout_marginStart="@dimen/details_inner_horizontal_margin"
             android:paddingStart="@dimen/details_read_more_btn_padding"
