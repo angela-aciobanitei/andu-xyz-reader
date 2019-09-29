@@ -20,7 +20,8 @@ import javax.inject.Inject;
 public class ArticlesViewModel extends ViewModel {
 
     private ArticlesRepository repository;
-    private int currentPosition;
+    private LiveData<Resource<List<Article>>> observableArticles;
+    private int position;
 
     @Inject
     ArticlesViewModel(ArticlesRepository repository) {
@@ -28,7 +29,10 @@ public class ArticlesViewModel extends ViewModel {
     }
 
     public LiveData<Resource<List<Article>>> getObservableArticles() {
-        return repository.getAllArticles();
+        if (observableArticles == null) {
+            observableArticles = repository.getAllArticles();
+        }
+        return observableArticles;
     }
 
     public LiveData<Article> getArticleById(long id) {
@@ -36,11 +40,12 @@ public class ArticlesViewModel extends ViewModel {
     }
 
     public int getCurrentPosition() {
-        return currentPosition;
+        return position;
     }
 
     public void setCurrentPosition(int currentPosition) {
-        this.currentPosition = currentPosition;
+
+        position = currentPosition;
     }
 
 }

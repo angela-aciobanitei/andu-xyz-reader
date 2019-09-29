@@ -12,6 +12,8 @@ import android.view.ViewTreeObserver;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.app.ShareCompat;
 import androidx.core.view.OnApplyWindowInsetsListener;
 import androidx.core.view.ViewCompat;
@@ -121,6 +123,8 @@ public class ArticleDetailsFragment extends Fragment {
         if (getHostActivity().getSupportActionBar() != null) {
             getHostActivity().getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
+
+        applyWindowInsets(binding.detailsCoordinatorLayout, binding.detailsToolbar);
     }
 
     private void setToolbarTitleIfCollapsed(Article article) {
@@ -154,7 +158,7 @@ public class ArticleDetailsFragment extends Fragment {
     }
 
     private void setupShareFab() {
-        binding.shareFab.setOnClickListener(view ->
+        binding.contentPartialDetails.shareFab.setOnClickListener(view ->
                 startActivity(Intent.createChooser(
                         ShareCompat.IntentBuilder.from(getHostActivity())
                                 .setType("text/plain")
@@ -162,25 +166,25 @@ public class ArticleDetailsFragment extends Fragment {
                                 .getIntent(), getString(R.string.action_share))));
     }
 
-    private void insetLayout() {
+    private void applyWindowInsets(CoordinatorLayout coordinatorLayout, Toolbar toolbar) {
         // See: https://chris.banes.dev/2019/04/12/insets-listeners-to-layouts/
         ViewCompat.setOnApplyWindowInsetsListener(
-                binding.detailsCoordinatorLayout,
+                coordinatorLayout,
                 new OnApplyWindowInsetsListener() {
                     @Override
                     public WindowInsetsCompat onApplyWindowInsets(View view, WindowInsetsCompat insets) {
                         // Apply insets for toolbar.
                         ViewGroup.MarginLayoutParams toolbarLayoutParams = (ViewGroup.MarginLayoutParams)
-                                binding.detailsToolbar.getLayoutParams();
+                                toolbar.getLayoutParams();
                         toolbarLayoutParams.topMargin = insets.getSystemWindowInsetTop();
-                        binding.detailsToolbar.setLayoutParams(toolbarLayoutParams);
+                        toolbar.setLayoutParams(toolbarLayoutParams);
 
                         // Clear listener to ensure that insets won't be reapplied.
                         view.setOnApplyWindowInsetsListener(null);
                         return insets.consumeSystemWindowInsets();
                     }
-        });
-        ViewCompat.requestApplyInsets(binding.detailsCoordinatorLayout);
+                });
+        ViewCompat.requestApplyInsets(coordinatorLayout);
     }
 
     private void initViewModel() {
@@ -207,21 +211,22 @@ public class ArticleDetailsFragment extends Fragment {
             setToolbarTitleIfCollapsed(article);
         }
 
-        binding.articleTitle.setText(article.getTitle());
-        binding.articleByline.setText(Utils.formatArticleByline(
+        binding.setArticle(article);
+        binding.contentPartialDetails.articleTitle.setText(article.getTitle());
+        binding.contentPartialDetails.articleByline.setText(Utils.formatArticleByline(
                 Utils.formatPublishedDate(article.getPublishedDate()),
                 article.getAuthor()));
 
-        binding.articleBody.setText(Html.fromHtml(article.getBody()
+        binding.contentPartialDetails.articleBody.setText(Html.fromHtml(article.getBody()
                 // Careful: this can trigger an IndexOutOfBoundsException.
                 .substring(0, 1000)
                 .replaceAll("\r\n\r\n", "<br /><br />")
                 .replaceAll("\r\n", " ")
                 .replaceAll(" {2}", "")));
 
-        binding.readMoreButton.setOnClickListener(view -> {
-            binding.readMoreButton.setVisibility(View.GONE);
-            binding.articleBody.setText(Html.fromHtml(article.getBody()
+        binding.contentPartialDetails.readMoreButton.setOnClickListener(view -> {
+            binding.contentPartialDetails.readMoreButton.setVisibility(View.GONE);
+            binding.contentPartialDetails.articleBody.setText(Html.fromHtml(article.getBody()
                     .replaceAll("\r\n\r\n", "<br /><br />")
                     .replaceAll("\r\n", " ")
                     .replaceAll(" {2}", "")));
@@ -265,21 +270,21 @@ public class ArticleDetailsFragment extends Fragment {
     private void schedulePostponedEnterTransition() {
         // Before calling startPostponedEnterTransition(), make sure that the
         // view is drawn first using ViewTreeObserver's OnPreDrawListener.
-            binding.getRoot().getViewTreeObserver().addOnPreDrawListener(
-                    new ViewTreeObserver.OnPreDrawListener() {
-                        @Override
-                        public boolean onPreDraw() {
-                            binding.getRoot().getViewTreeObserver()
-                                    .removeOnPreDrawListener(this);
-                            // The postponeEnterTransition() is called on the parent, that is
-                            // ArticlesPagerFragment, so the startPostponedEnterTransition()
-                            // should also be called on the parent to get the transition going.
-                            Objects.requireNonNull(getParentFragment())
-                                    .startPostponedEnterTransition();
-                            return true;
-                        }
+        binding.getRoot().getViewTreeObserver().addOnPreDrawListener(
+                new ViewTreeObserver.OnPreDrawListener() {
+                    @Override
+                    public boolean onPreDraw() {
+                        binding.getRoot().getViewTreeObserver()
+                                .removeOnPreDrawListener(this);
+                        // The postponeEnterTransition() is called on the parent, that is
+                        // ArticlesPagerFragment, so the startPostponedEnterTransition()
+                        // should also be called on the parent to get the transition going.
+                        Objects.requireNonNull(getParentFragment())
+                                .startPostponedEnterTransition();
+                        return true;
                     }
-            );
+                }
+        );
     }
 
     private void generatePaletteAsync(Bitmap bitmap) {
@@ -288,7 +293,7 @@ public class ArticleDetailsFragment extends Fragment {
             public void onGenerated(Palette palette) {
                 Palette.Swatch swatch = Utils.getDominantColor(palette);
                 if (swatch != null) {
-                    binding.metaBar.setBackgroundColor(swatch.getRgb());
+                    binding.contentPartialDetails.metaBar.setBackgroundColor(swatch.getRgb());
                     binding.detailsCollapsingToolbar.setContentScrimColor(swatch.getRgb());
                 }
             }

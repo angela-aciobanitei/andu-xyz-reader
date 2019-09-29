@@ -4,17 +4,26 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <data>
+
+        <variable
+            name="article"
+            type="com.ang.acb.materialme.data.model.Article" />
+
+    </data>
+
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        app:toggleVisibility="@{article != null}">
 
         <LinearLayout
             android:id="@+id/meta_bar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/details_metabar_vertical_margin"
-            android:layout_gravity="bottom"
             android:orientation="vertical"
+            android:layout_gravity="bottom"
+            android:layout_marginBottom="@dimen/details_metabar_vertical_margin"
             android:paddingLeft="@dimen/details_inner_horizontal_margin"
             android:paddingTop="@dimen/details_metabar_vertical_padding"
             android:paddingRight="@dimen/details_inner_horizontal_margin"
@@ -27,17 +36,19 @@
                 android:layout_height="wrap_content"
                 android:paddingBottom="@dimen/details_metabar_title_bottom_padding"
                 android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
+                android:lineSpacingMultiplier="@fraction/details_line_spacing_multiplier"
                 android:textStyle="bold"
-                tools:text="Ebooks, Neither E, Nor Books"
-                android:textColor="@android:color/white"/>
+                android:textColor="@android:color/white"
+                tools:text="Ebooks, Neither E, Nor Books" />
 
             <TextView
                 android:id="@+id/article_byline"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
-                tools:text="Cory Doctorow"
-                android:textColor="@android:color/white"/>
+                android:lineSpacingMultiplier="@fraction/details_line_spacing_multiplier"
+                android:textColor="@android:color/white"
+                tools:text="Cory Doctorow"/>
         </LinearLayout>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -51,7 +62,7 @@
             android:contentDescription="@string/action_share"
             android:src="@drawable/ic_share_white_24dp"
             app:backgroundTint="@color/colorAccent"
-            app:borderWidth="0dp"
+            app:borderWidth="@dimen/details_fab_border_width"
             app:elevation="@dimen/details_fab_elevation"
             app:fabSize="normal"/>
 
@@ -61,9 +72,12 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/details_inner_horizontal_margin"
             android:layout_marginRight="@dimen/details_inner_horizontal_margin"
-            android:layout_below="@+id/share_fab"
+            android:layout_marginTop="@dimen/details_article_body_top_margin"
+            android:layout_marginBottom="@dimen/details_inner_vertical_margin"
+            android:layout_below="@+id/meta_bar"
             android:textColorLink="@color/colorAccent"
             android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
+            android:lineSpacingMultiplier="@fraction/details_line_spacing_multiplier"
             tools:text="@tools:sample/lorem/random" />
 
         <Button
@@ -72,12 +86,12 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/article_body"
             android:layout_centerHorizontal="true"
-            android:layout_marginBottom="16dp"
+            android:layout_marginTop="@dimen/details_inner_vertical_margin"
+            android:layout_marginBottom="@dimen/details_inner_vertical_margin"
             android:layout_marginEnd="@dimen/details_inner_horizontal_margin"
             android:layout_marginStart="@dimen/details_inner_horizontal_margin"
             android:paddingStart="@dimen/details_read_more_btn_padding"
             android:paddingEnd="@dimen/details_read_more_btn_padding"
-            android:layout_marginTop="16dp"
             android:text="@string/read_more"
             android:textColor="@android:color/white"
             android:background="@color/colorAccent"

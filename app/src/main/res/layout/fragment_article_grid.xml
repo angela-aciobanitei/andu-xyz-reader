@@ -5,34 +5,33 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/grids_coordinator_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fitsSystemWindows="true"
-        app:statusBarBackground="@color/colorPrimary"
         tools:context=".ui.common.MainActivity">
 
         <com.google.android.material.appbar.AppBarLayout
             android:id="@+id/grids_app_bar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="?colorPrimary"
             android:theme="@style/AppBarOverlay">
 
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/grids_toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:theme="@style/AppBarOverlay"
-                app:popupTheme="@style/PopupOverlay">
+                app:layout_scrollFlags="scroll|enterAlways">
 
                 <ImageView
                     android:id="@+id/app_logo"
                     android:layout_width="wrap_content"
                     android:layout_height="?attr/actionBarSize"
                     android:layout_gravity="center"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginBottom="16dp"
-                    android:contentDescription="@string/app_name"
-                    android:src="@drawable/logo" />
+                    android:layout_marginTop="@dimen/logo_top_margin"
+                    android:layout_marginBottom="@dimen/logo_bottom_margin"
+                    android:contentDescription="@string/xyz_reader_logo"
+                    android:src="@drawable/logo"/>
             </androidx.appcompat.widget.Toolbar>
 
         </com.google.android.material.appbar.AppBarLayout>
