@@ -5,7 +5,6 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
         <variable
             name="article"
             type="com.ang.acb.materialme.data.model.Article" />
@@ -21,34 +20,34 @@
             android:id="@+id/meta_bar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
             android:layout_gravity="bottom"
             android:layout_marginBottom="@dimen/details_metabar_vertical_margin"
+            android:background="@color/colorPrimary"
+            android:orientation="vertical"
             android:paddingLeft="@dimen/details_inner_horizontal_margin"
             android:paddingTop="@dimen/details_metabar_vertical_padding"
             android:paddingRight="@dimen/details_inner_horizontal_margin"
-            android:paddingBottom="@dimen/details_metabar_vertical_padding"
-            android:background="@color/colorPrimary">
+            android:paddingBottom="@dimen/details_metabar_vertical_padding">
 
             <TextView
                 android:id="@+id/article_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:lineSpacingMultiplier="@fraction/details_line_spacing_multiplier"
                 android:paddingBottom="@dimen/details_metabar_title_bottom_padding"
                 android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
-                android:lineSpacingMultiplier="@fraction/details_line_spacing_multiplier"
-                android:textStyle="bold"
                 android:textColor="@android:color/white"
+                android:textStyle="bold"
                 tools:text="Ebooks, Neither E, Nor Books" />
 
             <TextView
                 android:id="@+id/article_byline"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
                 android:lineSpacingMultiplier="@fraction/details_line_spacing_multiplier"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
                 android:textColor="@android:color/white"
-                tools:text="Cory Doctorow"/>
+                tools:text="Cory Doctorow" />
         </LinearLayout>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton

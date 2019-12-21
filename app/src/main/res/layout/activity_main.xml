@@ -5,20 +5,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- Note: A core part of Navigation component is the navigation host.
-    The navigation host is an empty container where destinations are swapped
-    in and out as a user navigates through your app. A navigation host must
-    derive from NavHost. The default NavHost implementation, NavHostFragment,
-    handles swapping fragment destinations. The android:name attribute contains
-    the class name of your NavHost implementation. The app:navGraph attribute
-    associates the NavHostFragment with a navigation graph. The navigation
-    graph specifies all of the destinations in this NavHostFragment to which
-    users can navigate. The app:defaultNavHost="true" attribute ensures that
-    your NavHostFragment intercepts the system Back button. Note that only
-    one NavHost can be the default. If you have multiple hosts in the same
-    layout (two-pane layouts), be sure to specify only one default NavHost.
-    https://developer.android.com/guide/navigation/navigation-getting-started -->
-
     <fragment
         android:id="@+id/nav_host_fragment"
         android:name="androidx.navigation.fragment.NavHostFragment"

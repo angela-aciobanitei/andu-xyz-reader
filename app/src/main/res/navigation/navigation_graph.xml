@@ -4,20 +4,20 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/navigation_graph"
-    app:startDestination="@id/articles_grid_dest">
+    app:startDestination="@id/articles_grid">
 
     <fragment
-        android:id="@+id/articles_grid_dest"
+        android:id="@+id/articles_grid"
         android:name="com.ang.acb.materialme.ui.grid.ArticleGridFragment"
         android:label="fragment_article_grid"
         tools:layout="@layout/fragment_article_grid">
         <action
             android:id="@+id/action_from_articles_grid_to_articles_pager"
-            app:destination="@id/articles_pager_dest" />
+            app:destination="@id/articles_pager" />
     </fragment>
 
     <fragment
-        android:id="@+id/articles_pager_dest"
+        android:id="@+id/articles_pager"
         android:name="com.ang.acb.materialme.ui.details.ArticlesPagerFragment"
         android:label="fragment_articles_pager"
         tools:layout="@layout/fragment_articles_pager" />

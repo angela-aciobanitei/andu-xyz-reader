@@ -5,11 +5,9 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
         <variable
             name="article"
             type="com.ang.acb.materialme.data.model.Article" />
-
     </data>
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout

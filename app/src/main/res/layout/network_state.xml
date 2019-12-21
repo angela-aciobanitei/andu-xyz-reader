@@ -4,16 +4,12 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
         <import type="com.ang.acb.materialme.data.model.Resource.Status" />
+        <import type="com.ang.acb.materialme.data.model.Resource"/>
+        <import type="com.ang.acb.materialme.ui.common.RetryCallback"/>
 
-        <variable
-            name="resource"
-            type="com.ang.acb.materialme.data.model.Resource" />
-
-        <variable
-            name="callback"
-            type="com.ang.acb.materialme.ui.common.RetryCallback" />
+        <variable name="resource" type="Resource" />
+        <variable name="callback" type="RetryCallback" />
     </data>
 
     <LinearLayout

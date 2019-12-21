@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -50,6 +51,7 @@ import dagger.android.support.AndroidSupportInjection;
 public class ArticleDetailsFragment extends Fragment {
 
     private static final String ARG_ARTICLE_ID = "ARG_ARTICLE_ID";
+    public static final long INVALID_ARTICLE_ID = -1;
 
     private FragmentArticleDetailsBinding binding;
     private ArticlesViewModel viewModel;
@@ -73,8 +75,8 @@ public class ArticleDetailsFragment extends Fragment {
     public void onAttach(@NotNull Context context) {
         // Note: when using Dagger for injecting Fragment objects,
         // inject as early as possible. For this reason, call
-        // AndroidInjection.inject() in onAttach(). This also prevents
-        // inconsistencies if the Fragment is reattached.
+        // AndroidInjection.inject() in onAttach(). This also
+        // prevents inconsistencies if the Fragment is reattached.
         AndroidSupportInjection.inject(this);
         super.onAttach(context);
     }
@@ -85,6 +87,12 @@ public class ArticleDetailsFragment extends Fragment {
 
         if (getArguments() != null) {
             articleId = getArguments().getLong(ARG_ARTICLE_ID);
+            if (articleId == INVALID_ARTICLE_ID) {
+                Toast.makeText(
+                        getContext(),
+                        R.string.detail_error_message,
+                        Toast.LENGTH_SHORT).show();
+            }
         }
     }
 

@@ -69,8 +69,8 @@ public class ArticleGridFragment extends Fragment {
     public void onAttach(@NotNull Context context) {
         // Note: when using Dagger for injecting Fragment objects,
         // inject as early as possible. For this reason, call
-        // AndroidInjection.inject() in onAttach(). This also prevents
-        // inconsistencies if the Fragment is reattached.
+        // AndroidInjection.inject() in onAttach(). This also
+        // prevents inconsistencies if the Fragment is reattached.
         AndroidSupportInjection.inject(this);
         super.onAttach(context);
     }
