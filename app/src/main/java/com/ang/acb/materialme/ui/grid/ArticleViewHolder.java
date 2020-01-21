@@ -85,10 +85,6 @@ class ArticleViewHolder extends RecyclerView.ViewHolder {
                 .dontAnimate()
                 // Display a placeholder until the image is loaded and processed.
                 .placeholder(R.color.photoPlaceholder)
-                // Transform bitmap to obtain rounded corners.
-                .apply(RequestOptions.bitmapTransform(new RoundedCorners(
-                        (int) Utils.dipToPixels(binding.getRoot().getContext(),
-                        6))))
                 // Keep track of errors and successful image loading.
                 .listener(new RequestListener<Bitmap>() {
                     @Override

@@ -30,7 +30,6 @@ import com.ang.acb.materialme.databinding.FragmentArticleGridBinding;
 import com.ang.acb.materialme.ui.viewmodel.ArticlesViewModel;
 import com.ang.acb.materialme.ui.common.MainActivity;
 import com.ang.acb.materialme.ui.details.ArticlesPagerFragment;
-import com.ang.acb.materialme.utils.GridMarginDecoration;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -45,6 +44,8 @@ import dagger.android.support.AndroidSupportInjection;
 import timber.log.Timber;
 
 import static android.widget.GridLayout.VERTICAL;
+import static androidx.recyclerview.widget.StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS;
+
 /**
  * A fragment that displays a grid of article items.
  *
@@ -217,10 +218,10 @@ public class ArticleGridFragment extends Fragment {
     }
 
     private void setupRecyclerView(){
-        binding.articlesRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(
-                getResources().getInteger(R.integer.grid_column_count), VERTICAL));
-        binding.articlesRecyclerView.addItemDecoration(new GridMarginDecoration(
-                getHostActivity(), R.dimen.item_offset));
+        StaggeredGridLayoutManager layoutManager = new StaggeredGridLayoutManager(
+                getResources().getInteger(R.integer.grid_column_count), VERTICAL);
+        layoutManager.setGapStrategy(GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS);
+        binding.articlesRecyclerView.setLayoutManager(layoutManager);
         Timber.d("Setup articles recycle view.");
     }
 

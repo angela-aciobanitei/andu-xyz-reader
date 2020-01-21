@@ -1,11 +1,8 @@
 package com.ang.acb.materialme.utils;
 
-import android.content.Context;
 import android.text.Html;
 import android.text.Spanned;
 import android.text.format.DateUtils;
-import android.util.DisplayMetrics;
-import android.util.TypedValue;
 
 import androidx.palette.graphics.Palette;
 
@@ -43,12 +40,6 @@ public class Utils {
                     " by <font color='#ffffff'>" + author + "</font>");
         }
         return byline;
-    }
-
-    public static float dipToPixels(Context context, float dipValue) {
-        // See: https://stackoverflow.com/questions/8399184/convert-dip-to-px-in-android
-        DisplayMetrics metrics = context.getResources().getDisplayMetrics();
-        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dipValue, metrics);
     }
 
     public static Palette.Swatch getDominantColor(Palette palette) {

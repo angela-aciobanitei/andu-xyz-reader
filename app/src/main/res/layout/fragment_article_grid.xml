@@ -39,15 +39,16 @@
         <androidx.core.widget.NestedScrollView
             android:id="@+id/grids_nested_scroll_view"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/articles_recycler_view"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scrollbarStyle="outsideOverlay"
-                android:padding="@dimen/item_offset" />
+                android:layout_height="wrap_content"
+                android:padding="@dimen/item_offset"
+                android:clipToPadding="false"
+                android:scrollbars="none" />
         </androidx.core.widget.NestedScrollView>
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
