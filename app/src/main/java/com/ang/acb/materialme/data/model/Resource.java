@@ -9,7 +9,7 @@ import androidx.annotation.Nullable;
  * A generic class that contains data and status about loading this data.
  *
  * See: https://developer.android.com/jetpack/docs/guide#addendum.
- * See: https://github.com/googlesamples/android-architecture-components/tree/master/GithubBrowserSample
+ * See: https://github.com/android/android-architecture-components/tree/master/GithubBrowserSample
  */
 public class Resource<T> {
 

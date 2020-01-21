@@ -44,7 +44,6 @@ import dagger.android.support.AndroidSupportInjection;
 import timber.log.Timber;
 
 import static android.widget.GridLayout.VERTICAL;
-import static androidx.recyclerview.widget.StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS;
 
 /**
  * A fragment that displays a grid of article items.
@@ -57,7 +56,7 @@ public class ArticleGridFragment extends Fragment {
     private FragmentArticleGridBinding binding;
     private ArticlesViewModel viewModel;
     private ArticlesAdapter adapter;
-    private ArticleViewHolderListener listener;
+    private ArticleItemListener listener;
     private AtomicBoolean isEnterTransitionStarted;
 
     @Inject
@@ -154,9 +153,9 @@ public class ArticleGridFragment extends Fragment {
         });
     }
 
-    private ArticleViewHolderListener getViewHolderListener() {
+    private ArticleItemListener getViewHolderListener() {
         if (listener == null) {
-            listener = new ArticleViewHolderListener() {
+            listener = new ArticleItemListener() {
                 @Override
                 public void onItemClicked(View rootView, int position) {
                     // Save current position to view model.
@@ -220,7 +219,6 @@ public class ArticleGridFragment extends Fragment {
     private void setupRecyclerView(){
         StaggeredGridLayoutManager layoutManager = new StaggeredGridLayoutManager(
                 getResources().getInteger(R.integer.grid_column_count), VERTICAL);
-        layoutManager.setGapStrategy(GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS);
         binding.articlesRecyclerView.setLayoutManager(layoutManager);
         Timber.d("Setup articles recycle view.");
     }

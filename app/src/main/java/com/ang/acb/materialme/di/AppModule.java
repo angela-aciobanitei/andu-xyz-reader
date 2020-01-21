@@ -48,10 +48,7 @@ class AppModule {
     ApiService provideRetrofit() {
         return new Retrofit.Builder()
                 .baseUrl("https://go.udacity.com/")
-                // URL: https://go.udacity.com/xyz-reader-json
                 // Configure which converter is used for the data serialization.
-                // Gson is a Java serialization/deserialization library that
-                // converts Java Objects into JSON and back.
                 .addConverterFactory(GsonConverterFactory.create())
                 // Add a call adapter factory for supporting service method
                 // return types other than Retrofit2.Call. We will use a custom

@@ -18,9 +18,7 @@ import com.ang.acb.materialme.utils.Utils;
 
 import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
 
 import timber.log.Timber;
@@ -28,17 +26,17 @@ import timber.log.Timber;
 class ArticleViewHolder extends RecyclerView.ViewHolder {
 
     private ArticleItemBinding binding;
-    private ArticleViewHolderListener listener;
+    private ArticleItemListener listener;
 
     // Required constructor matching super
-    private ArticleViewHolder(@NonNull ArticleItemBinding binding, ArticleViewHolderListener listener) {
+    private ArticleViewHolder(@NonNull ArticleItemBinding binding, ArticleItemListener listener) {
         super(binding.getRoot());
 
         this.binding = binding;
         this.listener = listener;
     }
 
-    static ArticleViewHolder createViewHolder(ViewGroup parent, ArticleViewHolderListener listener) {
+    static ArticleViewHolder createViewHolder(ViewGroup parent, ArticleItemListener listener) {
         // Inflate view and obtain an instance of the binding class.
         ArticleItemBinding binding = ArticleItemBinding.inflate(
                 LayoutInflater.from(parent.getContext()),

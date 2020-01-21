@@ -31,10 +31,13 @@ public class XYZReaderApplication extends Application implements HasActivityInje
     public void onCreate() {
         super.onCreate();
 
-        DaggerAppComponent.builder().application(this).build().inject(this);
+        if (BuildConfig.DEBUG) {
+            Timber.plant(new Timber.DebugTree());
+        }
 
-        if (BuildConfig.DEBUG) Timber.plant(new Timber.DebugTree());
+        DaggerAppComponent.builder()
+                .application(this)
+                .build()
+                .inject(this);
     }
-
-
 }
