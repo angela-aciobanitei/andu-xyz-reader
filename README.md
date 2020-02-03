@@ -1,5 +1,7 @@
 ## XYZReader
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/310c7615818e4b26b94ea6ecc1ab2f25)](https://app.codacy.com/manual/angela-aciobanitei/andu-xyz-reader?utm_source=github.com&utm_medium=referral&utm_content=angela-aciobanitei/andu-xyz-reader&utm_campaign=Badge_Grade_Settings)
+
 Redesign an app to follow the Material Design guidelines and translate a set of static design mocks to a living 
 and breathing app.
 
