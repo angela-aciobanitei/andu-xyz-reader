@@ -226,7 +226,7 @@ public class ArticleDetailsFragment extends Fragment {
                 article.getAuthor()));
 
         binding.contentPartialDetails.articleBody.setText(Html.fromHtml(article.getBody()
-                // TODO Careful: this can trigger an IndexOutOfBoundsException.
+                // Careful: this can trigger an IndexOutOfBoundsException.
                 .substring(0, 1000)
                 .replaceAll("\r\n\r\n", "<br /><br />")
                 .replaceAll("\r\n", " ")
