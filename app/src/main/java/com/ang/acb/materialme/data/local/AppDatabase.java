@@ -8,7 +8,7 @@ import com.ang.acb.materialme.data.model.Article;
 /**
  * The Room database for this app.
  */
-@Database(entities = {Article.class}, version = 1, exportSchema = false)
+@Database(entities = {Article.class}, version = 2, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
 
     public abstract ArticleDao articleDao();
